@@ -15,10 +15,14 @@ class Ui_ExportEventsDialog(object):
     def setupUi(self, ExportEventsDialog):
         ExportEventsDialog.setObjectName("ExportEventsDialog")
         ExportEventsDialog.resize(345, 225)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(ExportEventsDialog.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            ExportEventsDialog.sizePolicy().hasHeightForWidth()
+        )
         ExportEventsDialog.setSizePolicy(sizePolicy)
         self.gridLayout = QtWidgets.QGridLayout(ExportEventsDialog)
         self.gridLayout.setObjectName("gridLayout")
@@ -38,7 +42,9 @@ class Ui_ExportEventsDialog(object):
         self.checkBox_filt = QtWidgets.QCheckBox(ExportEventsDialog)
         self.checkBox_filt.setObjectName("checkBox_filt")
         self.verticalLayout_2.addWidget(self.checkBox_filt)
-        self.formLayout.setLayout(0, QtWidgets.QFormLayout.FieldRole, self.verticalLayout_2)
+        self.formLayout.setLayout(
+            0, QtWidgets.QFormLayout.FieldRole, self.verticalLayout_2
+        )
         self.label = QtWidgets.QLabel(ExportEventsDialog)
         self.label.setObjectName("label")
         self.formLayout.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.label)
@@ -85,42 +91,58 @@ class Ui_ExportEventsDialog(object):
         self.verticalLayout.addWidget(self.checkBox_exp_png)
         self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
-        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
+        spacerItem = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout_3.addItem(spacerItem)
         self.checkBox = QtWidgets.QCheckBox(ExportEventsDialog)
         self.checkBox.setObjectName("checkBox")
         self.horizontalLayout_3.addWidget(self.checkBox)
         self.verticalLayout.addLayout(self.horizontalLayout_3)
-        self.formLayout.setLayout(2, QtWidgets.QFormLayout.FieldRole, self.verticalLayout)
+        self.formLayout.setLayout(
+            2, QtWidgets.QFormLayout.FieldRole, self.verticalLayout
+        )
         self.horizontalLayout.addLayout(self.formLayout)
         self.buttonBox = QtWidgets.QDialogButtonBox(ExportEventsDialog)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Expanding
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.buttonBox.sizePolicy().hasHeightForWidth())
         self.buttonBox.setSizePolicy(sizePolicy)
         self.buttonBox.setOrientation(QtCore.Qt.Vertical)
-        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox.setStandardButtons(
+            QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok
+        )
         self.buttonBox.setCenterButtons(False)
         self.buttonBox.setObjectName("buttonBox")
         self.horizontalLayout.addWidget(self.buttonBox)
         self.gridLayout.addLayout(self.horizontalLayout, 0, 0, 1, 1)
 
         self.retranslateUi(ExportEventsDialog)
-        self.buttonBox.accepted.connect(ExportEventsDialog.accept) # type: ignore
-        self.buttonBox.rejected.connect(ExportEventsDialog.reject) # type: ignore
+        self.buttonBox.accepted.connect(ExportEventsDialog.accept)  # type: ignore
+        self.buttonBox.rejected.connect(ExportEventsDialog.reject)  # type: ignore
         QtCore.QMetaObject.connectSlotsByName(ExportEventsDialog)
 
     def retranslateUi(self, ExportEventsDialog):
         _translate = QtCore.QCoreApplication.translate
-        ExportEventsDialog.setWindowTitle(_translate("ExportEventsDialog", "Export Trace Selection"))
+        ExportEventsDialog.setWindowTitle(
+            _translate("ExportEventsDialog", "Export Trace Selection")
+        )
         self.label_2.setText(_translate("ExportEventsDialog", "Data"))
         self.checkBox_raw.setText(_translate("ExportEventsDialog", "raw trace"))
         self.checkBox_filt.setText(_translate("ExportEventsDialog", "filtered trace"))
         self.label.setText(_translate("ExportEventsDialog", "Format"))
         self.checkBox_exp_csv.setText(_translate("ExportEventsDialog", "Export csv"))
-        self.label_csv_description.setText(_translate("ExportEventsDialog", "TextLabel"))
-        self.checkBox_exp_bin.setText(_translate("ExportEventsDialog", "Export bin (float 64, little endian)"))
-        self.label_bin_description.setText(_translate("ExportEventsDialog", "TextLabel"))
+        self.label_csv_description.setText(
+            _translate("ExportEventsDialog", "TextLabel")
+        )
+        self.checkBox_exp_bin.setText(
+            _translate("ExportEventsDialog", "Export bin (float 64, little endian)")
+        )
+        self.label_bin_description.setText(
+            _translate("ExportEventsDialog", "TextLabel")
+        )
         self.checkBox_exp_png.setText(_translate("ExportEventsDialog", "Export png"))
         self.checkBox.setText(_translate("ExportEventsDialog", "Fittings"))

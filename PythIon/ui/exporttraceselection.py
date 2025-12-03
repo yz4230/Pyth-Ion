@@ -15,10 +15,14 @@ class Ui_ExportTraceSelectionDialog(object):
     def setupUi(self, ExportTraceSelectionDialog):
         ExportTraceSelectionDialog.setObjectName("ExportTraceSelectionDialog")
         ExportTraceSelectionDialog.resize(604, 295)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(ExportTraceSelectionDialog.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            ExportTraceSelectionDialog.sizePolicy().hasHeightForWidth()
+        )
         ExportTraceSelectionDialog.setSizePolicy(sizePolicy)
         self.horizontalLayoutWidget = QtWidgets.QWidget(ExportTraceSelectionDialog)
         self.horizontalLayoutWidget.setGeometry(QtCore.QRect(9, 9, 591, 294))
@@ -37,12 +41,16 @@ class Ui_ExportTraceSelectionDialog(object):
         self.checkBox_filt = QtWidgets.QCheckBox(self.horizontalLayoutWidget)
         self.checkBox_filt.setObjectName("checkBox_filt")
         self.verticalLayout_2.addWidget(self.checkBox_filt)
-        self.formLayout.setLayout(0, QtWidgets.QFormLayout.FieldRole, self.verticalLayout_2)
+        self.formLayout.setLayout(
+            0, QtWidgets.QFormLayout.FieldRole, self.verticalLayout_2
+        )
         self.label_2 = QtWidgets.QLabel(self.horizontalLayoutWidget)
         self.label_2.setObjectName("label_2")
         self.formLayout.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.label_2)
         self.label_3 = QtWidgets.QLabel(self.horizontalLayoutWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label_3.sizePolicy().hasHeightForWidth())
@@ -68,19 +76,25 @@ class Ui_ExportTraceSelectionDialog(object):
         self.label_cur_ratio.setMinimumSize(QtCore.QSize(50, 0))
         self.label_cur_ratio.setObjectName("label_cur_ratio")
         self.horizontalLayout_3.addWidget(self.label_cur_ratio)
-        self.formLayout_2.setLayout(0, QtWidgets.QFormLayout.FieldRole, self.horizontalLayout_3)
+        self.formLayout_2.setLayout(
+            0, QtWidgets.QFormLayout.FieldRole, self.horizontalLayout_3
+        )
         self.label_7 = QtWidgets.QLabel(self.horizontalLayoutWidget)
         self.label_7.setObjectName("label_7")
         self.formLayout_2.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.label_7)
         self.label_cur_samplerate = QtWidgets.QLabel(self.horizontalLayoutWidget)
         self.label_cur_samplerate.setObjectName("label_cur_samplerate")
-        self.formLayout_2.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.label_cur_samplerate)
+        self.formLayout_2.setWidget(
+            1, QtWidgets.QFormLayout.FieldRole, self.label_cur_samplerate
+        )
         self.label_9 = QtWidgets.QLabel(self.horizontalLayoutWidget)
         self.label_9.setObjectName("label_9")
         self.formLayout_2.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.label_9)
         self.label_cur_Npoints = QtWidgets.QLabel(self.horizontalLayoutWidget)
         self.label_cur_Npoints.setObjectName("label_cur_Npoints")
-        self.formLayout_2.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.label_cur_Npoints)
+        self.formLayout_2.setWidget(
+            2, QtWidgets.QFormLayout.FieldRole, self.label_cur_Npoints
+        )
         self.label_5 = QtWidgets.QLabel(self.horizontalLayoutWidget)
         self.label_5.setObjectName("label_5")
         self.formLayout_2.setWidget(3, QtWidgets.QFormLayout.LabelRole, self.label_5)
@@ -93,16 +107,22 @@ class Ui_ExportTraceSelectionDialog(object):
         self.radioButton_mean = QtWidgets.QRadioButton(self.horizontalLayoutWidget)
         self.radioButton_mean.setObjectName("radioButton_mean")
         self.horizontalLayout_2.addWidget(self.radioButton_mean)
-        self.radioButton_subsampling = QtWidgets.QRadioButton(self.horizontalLayoutWidget)
+        self.radioButton_subsampling = QtWidgets.QRadioButton(
+            self.horizontalLayoutWidget
+        )
         self.radioButton_subsampling.setObjectName("radioButton_subsampling")
         self.horizontalLayout_2.addWidget(self.radioButton_subsampling)
-        self.formLayout_2.setLayout(3, QtWidgets.QFormLayout.FieldRole, self.horizontalLayout_2)
+        self.formLayout_2.setLayout(
+            3, QtWidgets.QFormLayout.FieldRole, self.horizontalLayout_2
+        )
         self.verticalLayout_5.addLayout(self.formLayout_2)
         self.label_DS_explanation = QtWidgets.QLabel(self.horizontalLayoutWidget)
         self.label_DS_explanation.setText("")
         self.label_DS_explanation.setObjectName("label_DS_explanation")
         self.verticalLayout_5.addWidget(self.label_DS_explanation)
-        self.formLayout.setLayout(1, QtWidgets.QFormLayout.FieldRole, self.verticalLayout_5)
+        self.formLayout.setLayout(
+            1, QtWidgets.QFormLayout.FieldRole, self.verticalLayout_5
+        )
         self.verticalLayout = QtWidgets.QVBoxLayout()
         self.verticalLayout.setObjectName("verticalLayout")
         self.checkBox_exp_csv = QtWidgets.QCheckBox(self.horizontalLayoutWidget)
@@ -144,48 +164,82 @@ class Ui_ExportTraceSelectionDialog(object):
         self.checkBox_exp_png = QtWidgets.QCheckBox(self.horizontalLayoutWidget)
         self.checkBox_exp_png.setObjectName("checkBox_exp_png")
         self.verticalLayout.addWidget(self.checkBox_exp_png)
-        self.formLayout.setLayout(2, QtWidgets.QFormLayout.FieldRole, self.verticalLayout)
+        self.formLayout.setLayout(
+            2, QtWidgets.QFormLayout.FieldRole, self.verticalLayout
+        )
         self.label = QtWidgets.QLabel(self.horizontalLayoutWidget)
         self.label.setObjectName("label")
         self.formLayout.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.label)
         self.horizontalLayout.addLayout(self.formLayout)
         self.buttonBox = QtWidgets.QDialogButtonBox(self.horizontalLayoutWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Expanding
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.buttonBox.sizePolicy().hasHeightForWidth())
         self.buttonBox.setSizePolicy(sizePolicy)
         self.buttonBox.setOrientation(QtCore.Qt.Vertical)
-        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox.setStandardButtons(
+            QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok
+        )
         self.buttonBox.setCenterButtons(False)
         self.buttonBox.setObjectName("buttonBox")
         self.horizontalLayout.addWidget(self.buttonBox)
 
         self.retranslateUi(ExportTraceSelectionDialog)
-        self.buttonBox.accepted.connect(ExportTraceSelectionDialog.accept) # type: ignore
-        self.buttonBox.rejected.connect(ExportTraceSelectionDialog.reject) # type: ignore
+        self.buttonBox.accepted.connect(ExportTraceSelectionDialog.accept)  # type: ignore
+        self.buttonBox.rejected.connect(ExportTraceSelectionDialog.reject)  # type: ignore
         QtCore.QMetaObject.connectSlotsByName(ExportTraceSelectionDialog)
 
     def retranslateUi(self, ExportTraceSelectionDialog):
         _translate = QtCore.QCoreApplication.translate
-        ExportTraceSelectionDialog.setWindowTitle(_translate("ExportTraceSelectionDialog", "Export Trace Selection"))
+        ExportTraceSelectionDialog.setWindowTitle(
+            _translate("ExportTraceSelectionDialog", "Export Trace Selection")
+        )
         self.checkBox_raw.setText(_translate("ExportTraceSelectionDialog", "raw trace"))
-        self.checkBox_filt.setText(_translate("ExportTraceSelectionDialog", "filtered trace"))
+        self.checkBox_filt.setText(
+            _translate("ExportTraceSelectionDialog", "filtered trace")
+        )
         self.label_2.setText(_translate("ExportTraceSelectionDialog", "Data"))
         self.label_3.setText(_translate("ExportTraceSelectionDialog", "Downsampling"))
         self.label_4.setText(_translate("ExportTraceSelectionDialog", "Ratio"))
-        self.label_cur_ratio.setText(_translate("ExportTraceSelectionDialog", "TextLabel"))
+        self.label_cur_ratio.setText(
+            _translate("ExportTraceSelectionDialog", "TextLabel")
+        )
         self.label_7.setText(_translate("ExportTraceSelectionDialog", "Sample rate"))
-        self.label_cur_samplerate.setText(_translate("ExportTraceSelectionDialog", "TextLabel"))
-        self.label_9.setText(_translate("ExportTraceSelectionDialog", "Points (per trace)"))
-        self.label_cur_Npoints.setText(_translate("ExportTraceSelectionDialog", "TextLabel"))
+        self.label_cur_samplerate.setText(
+            _translate("ExportTraceSelectionDialog", "TextLabel")
+        )
+        self.label_9.setText(
+            _translate("ExportTraceSelectionDialog", "Points (per trace)")
+        )
+        self.label_cur_Npoints.setText(
+            _translate("ExportTraceSelectionDialog", "TextLabel")
+        )
         self.label_5.setText(_translate("ExportTraceSelectionDialog", "Method"))
-        self.radioButton_peak.setText(_translate("ExportTraceSelectionDialog", "Peak ([min, max] alternating)"))
+        self.radioButton_peak.setText(
+            _translate("ExportTraceSelectionDialog", "Peak ([min, max] alternating)")
+        )
         self.radioButton_mean.setText(_translate("ExportTraceSelectionDialog", "Mean"))
-        self.radioButton_subsampling.setText(_translate("ExportTraceSelectionDialog", "Subsampling"))
-        self.checkBox_exp_csv.setText(_translate("ExportTraceSelectionDialog", "Export csv"))
-        self.label_csv_description.setText(_translate("ExportTraceSelectionDialog", "TextLabel"))
-        self.checkBox_exp_bin.setText(_translate("ExportTraceSelectionDialog", "Export bin (float 64, little endian)"))
-        self.label_bin_description.setText(_translate("ExportTraceSelectionDialog", "TextLabel"))
-        self.checkBox_exp_png.setText(_translate("ExportTraceSelectionDialog", "Export png"))
+        self.radioButton_subsampling.setText(
+            _translate("ExportTraceSelectionDialog", "Subsampling")
+        )
+        self.checkBox_exp_csv.setText(
+            _translate("ExportTraceSelectionDialog", "Export csv")
+        )
+        self.label_csv_description.setText(
+            _translate("ExportTraceSelectionDialog", "TextLabel")
+        )
+        self.checkBox_exp_bin.setText(
+            _translate(
+                "ExportTraceSelectionDialog", "Export bin (float 64, little endian)"
+            )
+        )
+        self.label_bin_description.setText(
+            _translate("ExportTraceSelectionDialog", "TextLabel")
+        )
+        self.checkBox_exp_png.setText(
+            _translate("ExportTraceSelectionDialog", "Export png")
+        )
         self.label.setText(_translate("ExportTraceSelectionDialog", "Format"))

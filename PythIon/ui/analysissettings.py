@@ -49,28 +49,40 @@ class Ui_AnalyzeForEventsDialog(object):
         self.label_2 = QtWidgets.QLabel(AnalyzeForEventsDialog)
         self.label_2.setObjectName("label_2")
         self.gridLayout.addWidget(self.label_2, 1, 0, 1, 1)
-        self.checkBox_enableSubeventStateDetection = QtWidgets.QCheckBox(AnalyzeForEventsDialog)
+        self.checkBox_enableSubeventStateDetection = QtWidgets.QCheckBox(
+            AnalyzeForEventsDialog
+        )
         self.checkBox_enableSubeventStateDetection.setText("")
         self.checkBox_enableSubeventStateDetection.setChecked(True)
-        self.checkBox_enableSubeventStateDetection.setObjectName("checkBox_enableSubeventStateDetection")
-        self.gridLayout.addWidget(self.checkBox_enableSubeventStateDetection, 1, 1, 1, 1)
+        self.checkBox_enableSubeventStateDetection.setObjectName(
+            "checkBox_enableSubeventStateDetection"
+        )
+        self.gridLayout.addWidget(
+            self.checkBox_enableSubeventStateDetection, 1, 1, 1, 1
+        )
         self.verticalLayout.addLayout(self.gridLayout)
         self.buttonBox = QtWidgets.QDialogButtonBox(AnalyzeForEventsDialog)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox.setStandardButtons(
+            QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok
+        )
         self.buttonBox.setObjectName("buttonBox")
         self.verticalLayout.addWidget(self.buttonBox)
 
         self.retranslateUi(AnalyzeForEventsDialog)
-        self.buttonBox.accepted.connect(AnalyzeForEventsDialog.accept) # type: ignore
-        self.buttonBox.rejected.connect(AnalyzeForEventsDialog.reject) # type: ignore
+        self.buttonBox.accepted.connect(AnalyzeForEventsDialog.accept)  # type: ignore
+        self.buttonBox.rejected.connect(AnalyzeForEventsDialog.reject)  # type: ignore
         QtCore.QMetaObject.connectSlotsByName(AnalyzeForEventsDialog)
 
     def retranslateUi(self, AnalyzeForEventsDialog):
         _translate = QtCore.QCoreApplication.translate
-        AnalyzeForEventsDialog.setWindowTitle(_translate("AnalyzeForEventsDialog", "Analyze for Events"))
+        AnalyzeForEventsDialog.setWindowTitle(
+            _translate("AnalyzeForEventsDialog", "Analyze for Events")
+        )
         self.label.setText(_translate("AnalyzeForEventsDialog", "Threshold"))
         self.label_3.setText(_translate("AnalyzeForEventsDialog", "Save Report"))
         self.radioButton_nA.setText(_translate("AnalyzeForEventsDialog", "nA"))
-        self.radioButton_pctBaseline.setText(_translate("AnalyzeForEventsDialog", "% Baseline"))
+        self.radioButton_pctBaseline.setText(
+            _translate("AnalyzeForEventsDialog", "% Baseline")
+        )
         self.label_2.setText(_translate("AnalyzeForEventsDialog", "Subevent States"))

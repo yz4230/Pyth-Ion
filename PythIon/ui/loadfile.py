@@ -45,13 +45,15 @@ class Ui_LoadFileDialog(object):
         self.verticalLayout.addLayout(self.gridLayout)
         self.buttonBox = QtWidgets.QDialogButtonBox(LoadFileDialog)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox.setStandardButtons(
+            QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok
+        )
         self.buttonBox.setObjectName("buttonBox")
         self.verticalLayout.addWidget(self.buttonBox)
 
         self.retranslateUi(LoadFileDialog)
-        self.buttonBox.accepted.connect(LoadFileDialog.accept) # type: ignore
-        self.buttonBox.rejected.connect(LoadFileDialog.reject) # type: ignore
+        self.buttonBox.accepted.connect(LoadFileDialog.accept)  # type: ignore
+        self.buttonBox.rejected.connect(LoadFileDialog.reject)  # type: ignore
         QtCore.QMetaObject.connectSlotsByName(LoadFileDialog)
 
     def retranslateUi(self, LoadFileDialog):
@@ -59,5 +61,7 @@ class Ui_LoadFileDialog(object):
         LoadFileDialog.setWindowTitle(_translate("LoadFileDialog", "Load File"))
         self.groupBox.setTitle(_translate("LoadFileDialog", "File"))
         self.pushButton_Browse.setText(_translate("LoadFileDialog", "Browse..."))
-        self.label.setText(_translate("LoadFileDialog", "Amplifier ADC Samplerate (kHz)"))
+        self.label.setText(
+            _translate("LoadFileDialog", "Amplifier ADC Samplerate (kHz)")
+        )
         self.label_2.setText(_translate("LoadFileDialog", "Lowpass Filter (kHz)"))

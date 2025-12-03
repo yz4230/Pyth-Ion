@@ -15,7 +15,9 @@ class Ui_PythIon(object):
     def setupUi(self, PythIon):
         PythIon.setObjectName("PythIon")
         PythIon.resize(987, 792)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(PythIon.sizePolicy().hasHeightForWidth())
@@ -23,16 +25,24 @@ class Ui_PythIon(object):
         PythIon.setMinimumSize(QtCore.QSize(0, 500))
         PythIon.setMaximumSize(QtCore.QSize(16777215, 16777215))
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(".\\ui\\../../pythionlogo.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(
+            QtGui.QPixmap(".\\ui\\../../pythionlogo.png"),
+            QtGui.QIcon.Normal,
+            QtGui.QIcon.Off,
+        )
         PythIon.setWindowIcon(icon)
         PythIon.setAutoFillBackground(False)
         PythIon.setDockNestingEnabled(True)
         self.centralwidget = QtWidgets.QWidget(PythIon)
         self.centralwidget.setEnabled(True)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.centralwidget.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.centralwidget.sizePolicy().hasHeightForWidth()
+        )
         self.centralwidget.setSizePolicy(sizePolicy)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout_10 = QtWidgets.QGridLayout(self.centralwidget)
@@ -41,7 +51,9 @@ class Ui_PythIon(object):
         self.gridLayout_10.setVerticalSpacing(10)
         self.gridLayout_10.setObjectName("gridLayout_10")
         self.groupBox = QtWidgets.QGroupBox(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.groupBox.sizePolicy().hasHeightForWidth())
@@ -53,7 +65,9 @@ class Ui_PythIon(object):
         self.gridLayout_4.setVerticalSpacing(5)
         self.gridLayout_4.setObjectName("gridLayout_4")
         self.signalplot = GraphicsLayoutWidget(self.groupBox)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.signalplot.sizePolicy().hasHeightForWidth())
@@ -72,7 +86,9 @@ class Ui_PythIon(object):
         self.horizontalLayout_16 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_16.setObjectName("horizontalLayout_16")
         self.label_5 = QtWidgets.QLabel(self.groupBox)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label_5.sizePolicy().hasHeightForWidth())
@@ -88,10 +104,14 @@ class Ui_PythIon(object):
         self.label_5.setObjectName("label_5")
         self.horizontalLayout_16.addWidget(self.label_5)
         self.eventbufferentry = QtWidgets.QLineEdit(self.groupBox)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.eventbufferentry.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.eventbufferentry.sizePolicy().hasHeightForWidth()
+        )
         self.eventbufferentry.setSizePolicy(sizePolicy)
         self.eventbufferentry.setMinimumSize(QtCore.QSize(60, 25))
         self.eventbufferentry.setMaximumSize(QtCore.QSize(50, 16777215))
@@ -104,13 +124,19 @@ class Ui_PythIon(object):
         self.eventbufferentry.setAlignment(QtCore.Qt.AlignCenter)
         self.eventbufferentry.setObjectName("eventbufferentry")
         self.horizontalLayout_16.addWidget(self.eventbufferentry)
-        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
+        spacerItem = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout_16.addItem(spacerItem)
         self.previousbutton = QtWidgets.QPushButton(self.groupBox)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.previousbutton.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.previousbutton.sizePolicy().hasHeightForWidth()
+        )
         self.previousbutton.setSizePolicy(sizePolicy)
         self.previousbutton.setMinimumSize(QtCore.QSize(0, 5))
         self.previousbutton.setMaximumSize(QtCore.QSize(40, 25))
@@ -123,10 +149,14 @@ class Ui_PythIon(object):
         self.previousbutton.setObjectName("previousbutton")
         self.horizontalLayout_16.addWidget(self.previousbutton)
         self.eventnumberentry = QtWidgets.QLineEdit(self.groupBox)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.eventnumberentry.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.eventnumberentry.sizePolicy().hasHeightForWidth()
+        )
         self.eventnumberentry.setSizePolicy(sizePolicy)
         self.eventnumberentry.setMinimumSize(QtCore.QSize(50, 0))
         self.eventnumberentry.setMaximumSize(QtCore.QSize(50, 25))
@@ -138,7 +168,9 @@ class Ui_PythIon(object):
         self.eventnumberentry.setObjectName("eventnumberentry")
         self.horizontalLayout_16.addWidget(self.eventnumberentry)
         self.nextbutton = QtWidgets.QPushButton(self.groupBox)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.nextbutton.sizePolicy().hasHeightForWidth())
@@ -154,7 +186,9 @@ class Ui_PythIon(object):
         self.nextbutton.setObjectName("nextbutton")
         self.horizontalLayout_16.addWidget(self.nextbutton)
         self.gobutton = QtWidgets.QPushButton(self.groupBox)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.gobutton.sizePolicy().hasHeightForWidth())
@@ -171,10 +205,14 @@ class Ui_PythIon(object):
         self.gobutton.setObjectName("gobutton")
         self.horizontalLayout_16.addWidget(self.gobutton)
         self.eventinfolabel = QtWidgets.QLabel(self.groupBox)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.eventinfolabel.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.eventinfolabel.sizePolicy().hasHeightForWidth()
+        )
         self.eventinfolabel.setSizePolicy(sizePolicy)
         self.eventinfolabel.setMinimumSize(QtCore.QSize(150, 25))
         self.eventinfolabel.setMaximumSize(QtCore.QSize(3000, 25))
@@ -197,7 +235,9 @@ class Ui_PythIon(object):
         self.horizontalLayout_3.setSpacing(5)
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
         self.eventplot = GraphicsLayoutWidget(self.groupBox)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.eventplot.sizePolicy().hasHeightForWidth())
@@ -209,13 +249,16 @@ class Ui_PythIon(object):
         font.setItalic(False)
         font.setWeight(3)
         self.eventplot.setFont(font)
-        self.eventplot.setStyleSheet("font: 25 20pt \"Kozuka Gothic Pro L\";\n"
-"border-color: rgb(0, 0, 0);")
+        self.eventplot.setStyleSheet(
+            'font: 25 20pt "Kozuka Gothic Pro L";\nborder-color: rgb(0, 0, 0);'
+        )
         self.eventplot.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.eventplot.setObjectName("eventplot")
         self.horizontalLayout_3.addWidget(self.eventplot)
         self.tabWidget = QtWidgets.QTabWidget(self.groupBox)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.tabWidget.sizePolicy().hasHeightForWidth())
@@ -247,7 +290,9 @@ class Ui_PythIon(object):
         self.horizontalLayout_5 = QtWidgets.QHBoxLayout(self.blockadetab)
         self.horizontalLayout_5.setObjectName("horizontalLayout_5")
         self.scatterplot = GraphicsLayoutWidget(self.blockadetab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.scatterplot.sizePolicy().hasHeightForWidth())
@@ -259,7 +304,7 @@ class Ui_PythIon(object):
         font.setItalic(False)
         font.setWeight(3)
         self.scatterplot.setFont(font)
-        self.scatterplot.setStyleSheet("font: 25 20pt \"Kozuka Gothic Pro L\";")
+        self.scatterplot.setStyleSheet('font: 25 20pt "Kozuka Gothic Pro L";')
         self.scatterplot.setObjectName("scatterplot")
         self.horizontalLayout_5.addWidget(self.scatterplot)
         self.tabWidget_2.addTab(self.blockadetab, "")
@@ -296,7 +341,9 @@ class Ui_PythIon(object):
         self.gridLayout_6.setSpacing(0)
         self.gridLayout_6.setObjectName("gridLayout_6")
         self.frachistplot = GraphicsLayoutWidget(self.frachisttab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.frachistplot.sizePolicy().hasHeightForWidth())
@@ -308,13 +355,15 @@ class Ui_PythIon(object):
         font.setItalic(False)
         font.setWeight(3)
         self.frachistplot.setFont(font)
-        self.frachistplot.setStyleSheet("font: 25 20pt \"Kozuka Gothic Pro L\";")
+        self.frachistplot.setStyleSheet('font: 25 20pt "Kozuka Gothic Pro L";')
         self.frachistplot.setObjectName("frachistplot")
         self.gridLayout_6.addWidget(self.frachistplot, 0, 0, 1, 1)
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.label_7 = QtWidgets.QLabel(self.frachisttab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label_7.sizePolicy().hasHeightForWidth())
@@ -322,7 +371,9 @@ class Ui_PythIon(object):
         self.label_7.setObjectName("label_7")
         self.horizontalLayout_2.addWidget(self.label_7)
         self.fracbins = QtWidgets.QLineEdit(self.frachisttab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.fracbins.sizePolicy().hasHeightForWidth())
@@ -339,7 +390,9 @@ class Ui_PythIon(object):
         self.gridLayout_7.setSpacing(0)
         self.gridLayout_7.setObjectName("gridLayout_7")
         self.delihistplot = GraphicsLayoutWidget(self.delitab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.delihistplot.sizePolicy().hasHeightForWidth())
@@ -351,14 +404,16 @@ class Ui_PythIon(object):
         font.setItalic(False)
         font.setWeight(3)
         self.delihistplot.setFont(font)
-        self.delihistplot.setStyleSheet("font: 25 20pt \"Kozuka Gothic Pro L\";")
+        self.delihistplot.setStyleSheet('font: 25 20pt "Kozuka Gothic Pro L";')
         self.delihistplot.setObjectName("delihistplot")
         self.gridLayout_7.addWidget(self.delihistplot, 0, 0, 1, 1)
         self.horizontalLayout_7 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_7.setObjectName("horizontalLayout_7")
         self.label_9 = QtWidgets.QLabel(self.delitab)
         self.label_9.setEnabled(True)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label_9.sizePolicy().hasHeightForWidth())
@@ -366,7 +421,9 @@ class Ui_PythIon(object):
         self.label_9.setObjectName("label_9")
         self.horizontalLayout_7.addWidget(self.label_9)
         self.delibins = QtWidgets.QLineEdit(self.delitab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.delibins.sizePolicy().hasHeightForWidth())
@@ -377,7 +434,9 @@ class Ui_PythIon(object):
         self.horizontalLayout_9 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_9.setObjectName("horizontalLayout_9")
         self.label_10 = QtWidgets.QLabel(self.delitab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label_10.sizePolicy().hasHeightForWidth())
@@ -385,7 +444,9 @@ class Ui_PythIon(object):
         self.label_10.setObjectName("label_10")
         self.horizontalLayout_9.addWidget(self.label_10)
         self.delirange0 = QtWidgets.QLineEdit(self.delitab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.delirange0.sizePolicy().hasHeightForWidth())
@@ -394,7 +455,9 @@ class Ui_PythIon(object):
         self.delirange0.setObjectName("delirange0")
         self.horizontalLayout_9.addWidget(self.delirange0)
         self.label_12 = QtWidgets.QLabel(self.delitab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label_12.sizePolicy().hasHeightForWidth())
@@ -402,7 +465,9 @@ class Ui_PythIon(object):
         self.label_12.setObjectName("label_12")
         self.horizontalLayout_9.addWidget(self.label_12)
         self.delirange1 = QtWidgets.QLineEdit(self.delitab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.delirange1.sizePolicy().hasHeightForWidth())
@@ -411,7 +476,9 @@ class Ui_PythIon(object):
         self.delirange1.setObjectName("delirange1")
         self.horizontalLayout_9.addWidget(self.delirange1)
         self.label_11 = QtWidgets.QLabel(self.delitab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label_11.sizePolicy().hasHeightForWidth())
@@ -428,10 +495,14 @@ class Ui_PythIon(object):
         self.gridLayout_8.setSpacing(0)
         self.gridLayout_8.setObjectName("gridLayout_8")
         self.dwellhistplot = GraphicsLayoutWidget(self.dwelltab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.dwellhistplot.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.dwellhistplot.sizePolicy().hasHeightForWidth()
+        )
         self.dwellhistplot.setSizePolicy(sizePolicy)
         font = QtGui.QFont()
         font.setFamily("Kozuka Gothic Pro L")
@@ -440,13 +511,15 @@ class Ui_PythIon(object):
         font.setItalic(False)
         font.setWeight(3)
         self.dwellhistplot.setFont(font)
-        self.dwellhistplot.setStyleSheet("font: 25 20pt \"Kozuka Gothic Pro L\";")
+        self.dwellhistplot.setStyleSheet('font: 25 20pt "Kozuka Gothic Pro L";')
         self.dwellhistplot.setObjectName("dwellhistplot")
         self.gridLayout_8.addWidget(self.dwellhistplot, 0, 0, 1, 1)
         self.horizontalLayout_14 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_14.setObjectName("horizontalLayout_14")
         self.label_21 = QtWidgets.QLabel(self.dwelltab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label_21.sizePolicy().hasHeightForWidth())
@@ -454,7 +527,9 @@ class Ui_PythIon(object):
         self.label_21.setObjectName("label_21")
         self.horizontalLayout_14.addWidget(self.label_21)
         self.dwellbins = QtWidgets.QLineEdit(self.dwelltab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.dwellbins.sizePolicy().hasHeightForWidth())
@@ -465,7 +540,9 @@ class Ui_PythIon(object):
         self.horizontalLayout_10 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_10.setObjectName("horizontalLayout_10")
         self.label_22 = QtWidgets.QLabel(self.dwelltab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label_22.sizePolicy().hasHeightForWidth())
@@ -473,7 +550,9 @@ class Ui_PythIon(object):
         self.label_22.setObjectName("label_22")
         self.horizontalLayout_10.addWidget(self.label_22)
         self.dwellrange0 = QtWidgets.QLineEdit(self.dwelltab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.dwellrange0.sizePolicy().hasHeightForWidth())
@@ -482,7 +561,9 @@ class Ui_PythIon(object):
         self.dwellrange0.setObjectName("dwellrange0")
         self.horizontalLayout_10.addWidget(self.dwellrange0)
         self.label_23 = QtWidgets.QLabel(self.dwelltab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label_23.sizePolicy().hasHeightForWidth())
@@ -490,7 +571,9 @@ class Ui_PythIon(object):
         self.label_23.setObjectName("label_23")
         self.horizontalLayout_10.addWidget(self.label_23)
         self.dwellrange1 = QtWidgets.QLineEdit(self.dwelltab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.dwellrange1.sizePolicy().hasHeightForWidth())
@@ -499,7 +582,9 @@ class Ui_PythIon(object):
         self.dwellrange1.setObjectName("dwellrange1")
         self.horizontalLayout_10.addWidget(self.dwellrange1)
         self.label_24 = QtWidgets.QLabel(self.dwelltab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label_24.sizePolicy().hasHeightForWidth())
@@ -516,7 +601,9 @@ class Ui_PythIon(object):
         self.gridLayout_9.setSpacing(0)
         self.gridLayout_9.setObjectName("gridLayout_9")
         self.dthistplot = GraphicsLayoutWidget(self.dttab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.dthistplot.sizePolicy().hasHeightForWidth())
@@ -528,13 +615,15 @@ class Ui_PythIon(object):
         font.setItalic(False)
         font.setWeight(3)
         self.dthistplot.setFont(font)
-        self.dthistplot.setStyleSheet("font: 25 20pt \"Kozuka Gothic Pro L\";")
+        self.dthistplot.setStyleSheet('font: 25 20pt "Kozuka Gothic Pro L";')
         self.dthistplot.setObjectName("dthistplot")
         self.gridLayout_9.addWidget(self.dthistplot, 0, 0, 1, 1)
         self.horizontalLayout_18 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_18.setObjectName("horizontalLayout_18")
         self.label_25 = QtWidgets.QLabel(self.dttab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label_25.sizePolicy().hasHeightForWidth())
@@ -542,7 +631,9 @@ class Ui_PythIon(object):
         self.label_25.setObjectName("label_25")
         self.horizontalLayout_18.addWidget(self.label_25)
         self.dtbins = QtWidgets.QLineEdit(self.dttab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.dtbins.sizePolicy().hasHeightForWidth())
@@ -556,7 +647,9 @@ class Ui_PythIon(object):
         self.label_26.setObjectName("label_26")
         self.horizontalLayout_19.addWidget(self.label_26)
         self.dtrange0 = QtWidgets.QLineEdit(self.dttab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.dtrange0.sizePolicy().hasHeightForWidth())
@@ -565,7 +658,9 @@ class Ui_PythIon(object):
         self.dtrange0.setObjectName("dtrange0")
         self.horizontalLayout_19.addWidget(self.dtrange0)
         self.label_27 = QtWidgets.QLabel(self.dttab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label_27.sizePolicy().hasHeightForWidth())
@@ -573,7 +668,9 @@ class Ui_PythIon(object):
         self.label_27.setObjectName("label_27")
         self.horizontalLayout_19.addWidget(self.label_27)
         self.dtrange1 = QtWidgets.QLineEdit(self.dttab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.dtrange1.sizePolicy().hasHeightForWidth())
@@ -605,13 +702,19 @@ class Ui_PythIon(object):
         self.dsValueEntry = QtWidgets.QLineEdit(self.groupBox)
         self.dsValueEntry.setObjectName("dsValueEntry")
         self.horizontalLayout.addWidget(self.dsValueEntry)
-        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem1 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout.addItem(spacerItem1)
         self.meandwelllabel = QtWidgets.QLabel(self.groupBox)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(1)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.meandwelllabel.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.meandwelllabel.sizePolicy().hasHeightForWidth()
+        )
         self.meandwelllabel.setSizePolicy(sizePolicy)
         self.meandwelllabel.setMinimumSize(QtCore.QSize(100, 10))
         self.meandwelllabel.setMaximumSize(QtCore.QSize(3000, 10))
@@ -624,10 +727,14 @@ class Ui_PythIon(object):
         self.meandwelllabel.setObjectName("meandwelllabel")
         self.horizontalLayout.addWidget(self.meandwelllabel)
         self.meandelilabel = QtWidgets.QLabel(self.groupBox)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(1)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.meandelilabel.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.meandelilabel.sizePolicy().hasHeightForWidth()
+        )
         self.meandelilabel.setSizePolicy(sizePolicy)
         self.meandelilabel.setMinimumSize(QtCore.QSize(100, 10))
         self.meandelilabel.setMaximumSize(QtCore.QSize(3000, 10))
@@ -640,7 +747,9 @@ class Ui_PythIon(object):
         self.meandelilabel.setObjectName("meandelilabel")
         self.horizontalLayout.addWidget(self.meandelilabel)
         self.meandtlabel = QtWidgets.QLabel(self.groupBox)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(1)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.meandtlabel.sizePolicy().hasHeightForWidth())
@@ -656,10 +765,14 @@ class Ui_PythIon(object):
         self.meandtlabel.setObjectName("meandtlabel")
         self.horizontalLayout.addWidget(self.meandtlabel)
         self.eventcounterlabel = QtWidgets.QLabel(self.groupBox)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(1)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.eventcounterlabel.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.eventcounterlabel.sizePolicy().hasHeightForWidth()
+        )
         self.eventcounterlabel.setSizePolicy(sizePolicy)
         self.eventcounterlabel.setMinimumSize(QtCore.QSize(100, 10))
         self.eventcounterlabel.setMaximumSize(QtCore.QSize(3000, 10))
@@ -671,12 +784,16 @@ class Ui_PythIon(object):
         self.eventcounterlabel.setFont(font)
         self.eventcounterlabel.setObjectName("eventcounterlabel")
         self.horizontalLayout.addWidget(self.eventcounterlabel)
-        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem2 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout.addItem(spacerItem2)
         self.gridLayout_4.addLayout(self.horizontalLayout, 2, 0, 1, 1)
         self.gridLayout_10.addWidget(self.groupBox, 1, 0, 1, 4)
         self.treeView = QtWidgets.QTreeView(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.treeView.sizePolicy().hasHeightForWidth())
@@ -684,7 +801,9 @@ class Ui_PythIon(object):
         self.treeView.setObjectName("treeView")
         self.gridLayout_10.addWidget(self.treeView, 0, 1, 1, 1)
         self.groupBox1 = QtWidgets.QGroupBox(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.groupBox1.sizePolicy().hasHeightForWidth())
@@ -692,12 +811,16 @@ class Ui_PythIon(object):
         self.groupBox1.setMinimumSize(QtCore.QSize(500, 150))
         self.groupBox1.setMaximumSize(QtCore.QSize(3000, 150))
         self.groupBox1.setLayoutDirection(QtCore.Qt.LeftToRight)
-        self.groupBox1.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.groupBox1.setAlignment(
+            QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter
+        )
         self.groupBox1.setObjectName("groupBox1")
         self.gridLayout_11 = QtWidgets.QGridLayout(self.groupBox1)
         self.gridLayout_11.setObjectName("gridLayout_11")
         self.filelabel = QtWidgets.QLabel(self.groupBox1)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.filelabel.sizePolicy().hasHeightForWidth())
@@ -712,11 +835,15 @@ class Ui_PythIon(object):
         self.filelabel.setFont(font)
         self.filelabel.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.filelabel.setWordWrap(True)
-        self.filelabel.setTextInteractionFlags(QtCore.Qt.LinksAccessibleByMouse|QtCore.Qt.TextSelectableByMouse)
+        self.filelabel.setTextInteractionFlags(
+            QtCore.Qt.LinksAccessibleByMouse | QtCore.Qt.TextSelectableByMouse
+        )
         self.filelabel.setObjectName("filelabel")
         self.gridLayout_11.addWidget(self.filelabel, 0, 1, 1, 2)
         self.logText = QtWidgets.QTextBrowser(self.groupBox1)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding
+        )
         sizePolicy.setHorizontalStretch(1)
         sizePolicy.setVerticalStretch(1)
         sizePolicy.setHeightForWidth(self.logText.sizePolicy().hasHeightForWidth())
@@ -755,11 +882,17 @@ class Ui_PythIon(object):
         self.actionBatch_Process = QtWidgets.QAction(PythIon)
         self.actionBatch_Process.setObjectName("actionBatch_Process")
         self.actionAuto_Detect_Clears_Alt_A = QtWidgets.QAction(PythIon)
-        self.actionAuto_Detect_Clears_Alt_A.setObjectName("actionAuto_Detect_Clears_Alt_A")
+        self.actionAuto_Detect_Clears_Alt_A.setObjectName(
+            "actionAuto_Detect_Clears_Alt_A"
+        )
         self.actionAdd_One_Cut_Region_Alt_D = QtWidgets.QAction(PythIon)
-        self.actionAdd_One_Cut_Region_Alt_D.setObjectName("actionAdd_One_Cut_Region_Alt_D")
+        self.actionAdd_One_Cut_Region_Alt_D.setObjectName(
+            "actionAdd_One_Cut_Region_Alt_D"
+        )
         self.actionDelete_Last_Cut_Region_Alt_D = QtWidgets.QAction(PythIon)
-        self.actionDelete_Last_Cut_Region_Alt_D.setObjectName("actionDelete_Last_Cut_Region_Alt_D")
+        self.actionDelete_Last_Cut_Region_Alt_D.setObjectName(
+            "actionDelete_Last_Cut_Region_Alt_D"
+        )
         self.actionClear_Selections = QtWidgets.QAction(PythIon)
         self.actionClear_Selections.setObjectName("actionClear_Selections")
         self.actionAuto_Select_IV_Region = QtWidgets.QAction(PythIon)
@@ -770,9 +903,13 @@ class Ui_PythIon(object):
         self.actionSelection_Array.setEnabled(False)
         self.actionSelection_Array.setObjectName("actionSelection_Array")
         self.actionSubevent_State_Settings = QtWidgets.QAction(PythIon)
-        self.actionSubevent_State_Settings.setObjectName("actionSubevent_State_Settings")
+        self.actionSubevent_State_Settings.setObjectName(
+            "actionSubevent_State_Settings"
+        )
         self.actionClear_Analysis_Data_Cache = QtWidgets.QAction(PythIon)
-        self.actionClear_Analysis_Data_Cache.setObjectName("actionClear_Analysis_Data_Cache")
+        self.actionClear_Analysis_Data_Cache.setObjectName(
+            "actionClear_Analysis_Data_Cache"
+        )
         self.actionLoad_Analysis_Data = QtWidgets.QAction(PythIon)
         self.actionLoad_Analysis_Data.setObjectName("actionLoad_Analysis_Data")
         self.actionLoad = QtWidgets.QAction(PythIon)
@@ -887,15 +1024,32 @@ class Ui_PythIon(object):
         self.eventnumberentry.setText(_translate("PythIon", "0"))
         self.nextbutton.setText(_translate("PythIon", ">"))
         self.gobutton.setText(_translate("PythIon", "Go"))
-        self.checkBoxShowSubeventStates.setText(_translate("PythIon", "Show Subevent States"))
-        self.tabWidget_2.setTabText(self.tabWidget_2.indexOf(self.blockadetab), _translate("PythIon", "Blockade"))
-        self.tabWidget_2.setTabText(self.tabWidget_2.indexOf(self.stdevtab), _translate("PythIon", "Stdev"))
-        self.tabWidget_2.setTabText(self.tabWidget_2.indexOf(self.skewnesstab), _translate("PythIon", "Skewness"))
-        self.tabWidget_2.setTabText(self.tabWidget_2.indexOf(self.kurtosistab), _translate("PythIon", "Kurtosis"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.scattertab), _translate("PythIon", "Scatter"))
+        self.checkBoxShowSubeventStates.setText(
+            _translate("PythIon", "Show Subevent States")
+        )
+        self.tabWidget_2.setTabText(
+            self.tabWidget_2.indexOf(self.blockadetab),
+            _translate("PythIon", "Blockade"),
+        )
+        self.tabWidget_2.setTabText(
+            self.tabWidget_2.indexOf(self.stdevtab), _translate("PythIon", "Stdev")
+        )
+        self.tabWidget_2.setTabText(
+            self.tabWidget_2.indexOf(self.skewnesstab),
+            _translate("PythIon", "Skewness"),
+        )
+        self.tabWidget_2.setTabText(
+            self.tabWidget_2.indexOf(self.kurtosistab),
+            _translate("PythIon", "Kurtosis"),
+        )
+        self.tabWidget.setTabText(
+            self.tabWidget.indexOf(self.scattertab), _translate("PythIon", "Scatter")
+        )
         self.label_7.setText(_translate("PythIon", "Bins:"))
         self.fracbins.setText(_translate("PythIon", "50"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.frachisttab), _translate("PythIon", "Frac"))
+        self.tabWidget.setTabText(
+            self.tabWidget.indexOf(self.frachisttab), _translate("PythIon", "Frac")
+        )
         self.label_9.setText(_translate("PythIon", "Bins"))
         self.delibins.setText(_translate("PythIon", "50"))
         self.label_10.setText(_translate("PythIon", "("))
@@ -903,7 +1057,9 @@ class Ui_PythIon(object):
         self.label_12.setText(_translate("PythIon", "-"))
         self.delirange1.setText(_translate("PythIon", "1"))
         self.label_11.setText(_translate("PythIon", ")"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.delitab), _translate("PythIon", "Deli"))
+        self.tabWidget.setTabText(
+            self.tabWidget.indexOf(self.delitab), _translate("PythIon", "Deli")
+        )
         self.label_21.setText(_translate("PythIon", "Bins"))
         self.dwellbins.setText(_translate("PythIon", "100"))
         self.label_22.setText(_translate("PythIon", "("))
@@ -911,7 +1067,9 @@ class Ui_PythIon(object):
         self.label_23.setText(_translate("PythIon", "-"))
         self.dwellrange1.setText(_translate("PythIon", "5"))
         self.label_24.setText(_translate("PythIon", ")"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.dwelltab), _translate("PythIon", "Dwell"))
+        self.tabWidget.setTabText(
+            self.tabWidget.indexOf(self.dwelltab), _translate("PythIon", "Dwell")
+        )
         self.label_25.setText(_translate("PythIon", "Bins"))
         self.dtbins.setText(_translate("PythIon", "100"))
         self.label_26.setText(_translate("PythIon", "("))
@@ -919,7 +1077,9 @@ class Ui_PythIon(object):
         self.label_27.setText(_translate("PythIon", "-"))
         self.dtrange1.setText(_translate("PythIon", "1"))
         self.label_28.setText(_translate("PythIon", ")"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.dttab), _translate("PythIon", "dt"))
+        self.tabWidget.setTabText(
+            self.tabWidget.indexOf(self.dttab), _translate("PythIon", "dt")
+        )
         self.checkBox_showRaw.setText(_translate("PythIon", "Show Raw (Alt+&Z)"))
         self.checkBox_showFilt.setText(_translate("PythIon", "Show Filtered (Alt+&X)"))
         self.dsUpdateButton.setText(_translate("PythIon", "Update Down Sampling"))
@@ -938,20 +1098,38 @@ class Ui_PythIon(object):
         self.actionsetbuffer.setText(_translate("PythIon", "Set Event Buffer Size"))
         self.Poresizeraction.setText(_translate("PythIon", "PoreSizer"))
         self.actionBatch_Process.setText(_translate("PythIon", "Batch Process"))
-        self.actionAuto_Detect_Clears_Alt_A.setText(_translate("PythIon", "Auto Detect Clears"))
+        self.actionAuto_Detect_Clears_Alt_A.setText(
+            _translate("PythIon", "Auto Detect Clears")
+        )
         self.actionAuto_Detect_Clears_Alt_A.setShortcut(_translate("PythIon", "Alt+A"))
-        self.actionAdd_One_Cut_Region_Alt_D.setText(_translate("PythIon", "Add Single Selection"))
+        self.actionAdd_One_Cut_Region_Alt_D.setText(
+            _translate("PythIon", "Add Single Selection")
+        )
         self.actionAdd_One_Cut_Region_Alt_D.setShortcut(_translate("PythIon", "Alt+S"))
-        self.actionDelete_Last_Cut_Region_Alt_D.setText(_translate("PythIon", "Delete Last Selection"))
-        self.actionDelete_Last_Cut_Region_Alt_D.setShortcut(_translate("PythIon", "Alt+D"))
+        self.actionDelete_Last_Cut_Region_Alt_D.setText(
+            _translate("PythIon", "Delete Last Selection")
+        )
+        self.actionDelete_Last_Cut_Region_Alt_D.setShortcut(
+            _translate("PythIon", "Alt+D")
+        )
         self.actionClear_Selections.setText(_translate("PythIon", "Clear Selections"))
         self.actionClear_Selections.setShortcut(_translate("PythIon", "Alt+C"))
-        self.actionAuto_Select_IV_Region.setText(_translate("PythIon", "Auto Select IV Region..."))
-        self.actionSelection_Export_Data.setText(_translate("PythIon", "Export Trace..."))
+        self.actionAuto_Select_IV_Region.setText(
+            _translate("PythIon", "Auto Select IV Region...")
+        )
+        self.actionSelection_Export_Data.setText(
+            _translate("PythIon", "Export Trace...")
+        )
         self.actionSelection_Array.setText(_translate("PythIon", "Selection Array"))
-        self.actionSubevent_State_Settings.setText(_translate("PythIon", "Subevent State Detection Settings..."))
-        self.actionClear_Analysis_Data_Cache.setText(_translate("PythIon", "Clear Analysis Data Cache"))
-        self.actionLoad_Analysis_Data.setText(_translate("PythIon", "Load Analysis Data"))
+        self.actionSubevent_State_Settings.setText(
+            _translate("PythIon", "Subevent State Detection Settings...")
+        )
+        self.actionClear_Analysis_Data_Cache.setText(
+            _translate("PythIon", "Clear Analysis Data Cache")
+        )
+        self.actionLoad_Analysis_Data.setText(
+            _translate("PythIon", "Load Analysis Data")
+        )
         self.actionLoad.setText(_translate("PythIon", "Load..."))
         self.actionNext_File.setText(_translate("PythIon", "Next File"))
         self.actionPrevious_File.setText(_translate("PythIon", "Previous File"))
@@ -959,9 +1137,13 @@ class Ui_PythIon(object):
         self.actionSave_Segment_Info.setText(_translate("PythIon", "Save Segment Info"))
         self.action_version.setText(_translate("PythIon", "(version)"))
         self.actionInvert_Current.setText(_translate("PythIon", "Invert Current"))
-        self.actionInvert_Current_Sign.setText(_translate("PythIon", "Invert Current Sign"))
+        self.actionInvert_Current_Sign.setText(
+            _translate("PythIon", "Invert Current Sign")
+        )
         self.actionAnalyze.setText(_translate("PythIon", "Analyze..."))
-        self.actionExport_measurement.setText(_translate("PythIon", "Export Measurement"))
+        self.actionExport_measurement.setText(
+            _translate("PythIon", "Export Measurement")
+        )
         self.actionCut.setText(_translate("PythIon", "Cut"))
         self.actionSet_Baseline.setText(_translate("PythIon", "Set Baseline"))
         self.actionThreshold.setText(_translate("PythIon", "Threshold"))
@@ -971,9 +1153,13 @@ class Ui_PythIon(object):
         self.actionMark_Start.setText(_translate("PythIon", "Mark Start"))
         self.actionMark_End.setText(_translate("PythIon", "Mark End"))
         self.actionAdd_Annotation.setText(_translate("PythIon", "Add Annotation"))
-        self.actionLoad_Another_Track.setText(_translate("PythIon", "Load Another Track..."))
+        self.actionLoad_Another_Track.setText(
+            _translate("PythIon", "Load Another Track...")
+        )
         self.actionRepaint_Analysis.setText(_translate("PythIon", "Repaint Analysis"))
         self.actionCut_Unselected.setText(_translate("PythIon", "Cut Unselected"))
         self.actionInspect_Selection.setText(_translate("PythIon", "Inspect"))
         self.actionInspect_Selection.setShortcut(_translate("PythIon", "Alt+V"))
+
+
 from pyqtgraph import GraphicsLayoutWidget

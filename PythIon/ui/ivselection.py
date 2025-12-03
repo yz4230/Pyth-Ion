@@ -15,10 +15,14 @@ class Ui_AutoIVSelectDialog(object):
     def setupUi(self, AutoIVSelectDialog):
         AutoIVSelectDialog.setObjectName("AutoIVSelectDialog")
         AutoIVSelectDialog.resize(337, 120)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(AutoIVSelectDialog.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            AutoIVSelectDialog.sizePolicy().hasHeightForWidth()
+        )
         AutoIVSelectDialog.setSizePolicy(sizePolicy)
         AutoIVSelectDialog.setMinimumSize(QtCore.QSize(300, 100))
         self.horizontalLayoutWidget = QtWidgets.QWidget(AutoIVSelectDialog)
@@ -31,7 +35,9 @@ class Ui_AutoIVSelectDialog(object):
         self.verticalLayout.setObjectName("verticalLayout")
         self.formLayout = QtWidgets.QFormLayout()
         self.formLayout.setFieldGrowthPolicy(QtWidgets.QFormLayout.FieldsStayAtSizeHint)
-        self.formLayout.setLabelAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.formLayout.setLabelAlignment(
+            QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter
+        )
         self.formLayout.setFormAlignment(QtCore.Qt.AlignCenter)
         self.formLayout.setContentsMargins(40, 0, 0, -1)
         self.formLayout.setObjectName("formLayout")
@@ -40,13 +46,17 @@ class Ui_AutoIVSelectDialog(object):
         self.formLayout.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.label)
         self.offsetLineEdit = QtWidgets.QLineEdit(self.horizontalLayoutWidget)
         self.offsetLineEdit.setObjectName("offsetLineEdit")
-        self.formLayout.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.offsetLineEdit)
+        self.formLayout.setWidget(
+            0, QtWidgets.QFormLayout.FieldRole, self.offsetLineEdit
+        )
         self.label_2 = QtWidgets.QLabel(self.horizontalLayoutWidget)
         self.label_2.setObjectName("label_2")
         self.formLayout.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.label_2)
         self.startLineEdit = QtWidgets.QLineEdit(self.horizontalLayoutWidget)
         self.startLineEdit.setObjectName("startLineEdit")
-        self.formLayout.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.startLineEdit)
+        self.formLayout.setWidget(
+            1, QtWidgets.QFormLayout.FieldRole, self.startLineEdit
+        )
         self.label_3 = QtWidgets.QLabel(self.horizontalLayoutWidget)
         self.label_3.setObjectName("label_3")
         self.formLayout.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.label_3)
@@ -56,24 +66,30 @@ class Ui_AutoIVSelectDialog(object):
         self.verticalLayout.addLayout(self.formLayout)
         self.horizontalLayout.addLayout(self.verticalLayout)
         self.buttonBox = QtWidgets.QDialogButtonBox(self.horizontalLayoutWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.buttonBox.sizePolicy().hasHeightForWidth())
         self.buttonBox.setSizePolicy(sizePolicy)
         self.buttonBox.setOrientation(QtCore.Qt.Vertical)
-        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox.setStandardButtons(
+            QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok
+        )
         self.buttonBox.setObjectName("buttonBox")
         self.horizontalLayout.addWidget(self.buttonBox)
 
         self.retranslateUi(AutoIVSelectDialog)
-        self.buttonBox.rejected.connect(AutoIVSelectDialog.reject) # type: ignore
-        self.buttonBox.accepted.connect(AutoIVSelectDialog.accept) # type: ignore
+        self.buttonBox.rejected.connect(AutoIVSelectDialog.reject)  # type: ignore
+        self.buttonBox.accepted.connect(AutoIVSelectDialog.accept)  # type: ignore
         QtCore.QMetaObject.connectSlotsByName(AutoIVSelectDialog)
 
     def retranslateUi(self, AutoIVSelectDialog):
         _translate = QtCore.QCoreApplication.translate
-        AutoIVSelectDialog.setWindowTitle(_translate("AutoIVSelectDialog", "Set Auto IV Selection Parameters"))
+        AutoIVSelectDialog.setWindowTitle(
+            _translate("AutoIVSelectDialog", "Set Auto IV Selection Parameters")
+        )
         self.label.setText(_translate("AutoIVSelectDialog", "offset (ms)"))
         self.offsetLineEdit.setText(_translate("AutoIVSelectDialog", "0"))
         self.label_2.setText(_translate("AutoIVSelectDialog", "start (ms)"))

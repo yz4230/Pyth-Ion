@@ -1,4 +1,4 @@
-__version__='20250715r1'
+__version__ = "20250715r1"
 
 """
 Updates
