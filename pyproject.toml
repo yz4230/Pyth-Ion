@@ -34,3 +34,8 @@ version = {attr="PythIon.__version__.__version__"}
 
 [tool.setuptools.packages.find]
 exclude = ["PythIon.backups*", "PythIon.build*", "PythIon.dist*", "PythIon.ioniq*", "PythIon.legacy*", "start_pythion.py"]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.14.7",
+]
