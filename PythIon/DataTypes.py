@@ -147,6 +147,7 @@ class FileData:
         # self.lr=[]
         self.lastClicked = []
         self.hasbaselinebeenset = 0
+        self.selected_event_id: int | None = None
 
         self.event_sizes = None
         self.event_colors = None

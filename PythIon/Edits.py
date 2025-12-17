@@ -67,3 +67,45 @@ def invertData(app: BaseAppMainWindow):
         app.ui_baseline_std = np.std(app.perfiledata.data.filt[0])
     app.paintCurrentTrace()
     app.printlog("Data inverted")
+
+
+def deleteSelectedEvent(app: BaseAppMainWindow):
+    """Delete the currently selected event from scatter plot."""
+    from . import Painting
+
+    event_id = app.perfiledata.selected_event_id
+    if event_id is None:
+        app.printlog("No event selected for deletion")
+        return
+
+    if app.perfiledata.analysis_results is None:
+        app.printlog("No analysis results available")
+        return
+
+    event_table = app.perfiledata.analysis_results.tables.get("Event")
+    if event_table is None or len(event_table) == 0:
+        app.printlog("No events in analysis results")
+        return
+
+    # Find and remove the event with the matching id
+    event_mask = event_table["id"] != event_id
+    if np.all(event_mask):
+        app.printlog(f"Event id {event_id} not found")
+        return
+
+    # Remove the event
+    app.perfiledata.analysis_results.tables["Event"] = event_table[event_mask]
+
+    # Also remove related CUSUM states if they exist
+    state_table = app.perfiledata.analysis_results.tables.get("CUSUMState")
+    if state_table is not None and len(state_table) > 0:
+        state_mask = state_table["parent_id"] != event_id
+        app.perfiledata.analysis_results.tables["CUSUMState"] = state_table[state_mask]
+
+    app.printlog(f"Deleted event id {event_id}")
+
+    # Clear selection
+    app.perfiledata.selected_event_id = None
+
+    # Repaint analysis plots
+    Painting.plotAnalysis(app)

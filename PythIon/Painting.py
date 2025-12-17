@@ -621,6 +621,20 @@ def scatterClicked(app: BaseAppMainWindow, plot, points):
                 clickedentry = entry
                 break
     clickedindex = points[0].index()
+
+    # Track selected event id for deletion
+    if clickedentry == "events":
+        event_table = app.perfiledata.analysis_results.tables.get("Event")
+        if event_table is not None and clickedindex < len(event_table):
+            app.perfiledata.selected_event_id = event_table[clickedindex]["id"]
+            app.printlog(f"Selected event id: {app.perfiledata.selected_event_id}")
+    elif clickedentry == "cusum_states":
+        # For CUSUM states, select the parent event
+        state_table = app.perfiledata.analysis_results.tables.get("CUSUMState")
+        if state_table is not None and clickedindex < len(state_table):
+            app.perfiledata.selected_event_id = state_table[clickedindex]["parent_id"]
+            app.printlog(f"Selected parent event id: {app.perfiledata.selected_event_id}")
+
     inspectEvent(app, clickedentry, clickedindex)
 
 
