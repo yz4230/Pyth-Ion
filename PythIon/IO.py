@@ -7,7 +7,6 @@ import yaml
 import numpy as np
 from scipy import signal
 import matplotlib.pyplot as plt
-import pyqtgraph.exporters
 
 
 from .__version__ import __version__

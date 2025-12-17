@@ -1,6 +1,4 @@
-from .__version__ import __version__
 from .BaseApp import *
-from . import Selections
 
 
 def doCut(app: BaseAppMainWindow):

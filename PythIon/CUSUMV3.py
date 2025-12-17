@@ -1,5 +1,4 @@
 import numpy as np
-from scipy import ndimage
 from scipy.ndimage import median_filter as spmedfilt
 
 

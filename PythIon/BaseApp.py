@@ -6,7 +6,7 @@ from PyQt5 import QtGui, QtCore, QtWidgets
 import pyqtgraph as pg
 import colorcet as cc
 import time as builtintime
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 
 from .DataTypes import *
 from .__version__ import __version__

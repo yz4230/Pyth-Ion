@@ -85,7 +85,7 @@ def paintCurrentTrace(app: BaseAppMainWindow):
 
 
 def plotAnalysis(app: BaseAppMainWindow):
-    app.printlog(f"Plotting analysis")
+    app.printlog("Plotting analysis")
     for p in app.p2s:
         for entry in app.scatter_entries:
             p[entry].clear()
