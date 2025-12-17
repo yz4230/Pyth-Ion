@@ -94,6 +94,7 @@ class BaseAppMainWindow(QtWidgets.QMainWindow):
         self.inspect_event_fit_color_multistate = (90, 110, 85, 100)
 
         self.w1 = self.ui.scatterplot.addPlot()
+        self.ui.scatterplot.keyPressEvent = lambda ev: ev.ignore()
         axis = LogExponentAxisItem(orientation="bottom")
         self.w1.setAxisItems({"bottom": axis})
         self.p2 = dict()

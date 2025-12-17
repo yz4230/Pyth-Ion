@@ -16,8 +16,6 @@ from PyQt5.QtGui import QKeyEvent
 class ExtAppMainWindow(BaseAppMainWindow):
     def __init__(self, width, height, master=None):
         super().__init__(width, height, master)
-        # Install event filter to capture key events from child widgets
-        QtWidgets.QApplication.instance().installEventFilter(self)
         ##########Linking buttons to main functions############
         self.ui.actionLoad.triggered.connect(self.doFileLoad)
         self.ui.actionReload.triggered.connect(lambda: IO.loadFile(self))
@@ -132,13 +130,12 @@ class ExtAppMainWindow(BaseAppMainWindow):
         self.ui.eventnumberentry.setText(str(eventnumber - 1))
         Painting.inspectEvent(self)
 
-    def eventFilter(self, obj, event: QEvent):
-        """Capture key events from all widgets including pyqtgraph plots."""
-        if isinstance(event, QKeyEvent):
-            if event.key() == Qt.Key.Key_Delete or event.key() == Qt.Key.Key_Backspace:
+    def keyPressEvent(self, event: QKeyEvent | None) -> None:
+        match event and event.key():
+            case Qt.Key.Key_Delete | Qt.Key.Key_Backspace:
                 Edits.deleteSelectedEvent(self)
-                return True  # Event handled
-        return super().eventFilter(obj, event)
+            case _:
+                super().keyPressEvent(event)
 
 
 def start():
