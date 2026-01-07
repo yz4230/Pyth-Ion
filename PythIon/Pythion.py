@@ -63,6 +63,16 @@ class ExtAppMainWindow(BaseAppMainWindow):
             lambda: Painting.plotAnalysis(self)
         )
 
+        self.actionExport_Event_Points_CSV = QtWidgets.QAction(
+            "Export Event Points (CSV)...", self
+        )
+        self.ui.menuAnalysis.insertAction(
+            self.ui.actionExport_Events, self.actionExport_Event_Points_CSV
+        )
+        self.actionExport_Event_Points_CSV.triggered.connect(
+            lambda: IO.exportEventPointsCSV(self)
+        )
+
         self.ui.gobutton.clicked.connect(lambda: Painting.inspectEvent(self))
         self.ui.previousbutton.clicked.connect(self.prevEvent)
         self.ui.nextbutton.clicked.connect(self.nextEvent)

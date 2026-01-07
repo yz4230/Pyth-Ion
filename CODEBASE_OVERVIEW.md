@@ -203,6 +203,109 @@ class AnalysisResults:
 5. IO.saveAnalysis() で保存
 ```
 
+---
+
+## 📤 CSVエクスポート（Event Points）
+
+### 目的
+
+イベント（`tables["Event"]`）ごとに、
+
+- **開始点（start）** と **終了点（end）** の座標
+- 解析で既に計算済みのイベント特徴量（dwell, frac, 統計量など）
+
+を **1イベント=1行** のCSVとして出力します。機械学習入力（特徴量テーブル）として使う想定です。
+
+### UI導線
+
+- 解析実行後に `Analysis → Export Event Points (CSV)...`
+
+### 出力元（実装）
+
+- CSV書き出し: `PythIon/IO.py` の `exportEventPointsCSV(app)`
+- メニュー追加: `PythIon/Pythion.py`
+
+### start/end点の定義（重要）
+
+このCSVの start/end は、メイン波形上の注釈点に揃えています（描画は `Painting.plotAnalysis()` / `Painting.inspectEvent_()` を参照）。
+
+- `start_*` は `local_startpt/global_startpt` の点
+- `end_*` は `local_endpt/global_endpt` の点
+
+注意：`local_endpt` は実装上、しばしば **「baselineに戻った点」ではなく「イベント内の最後の局所最小（谷）」**に調整されます。
+そのため `end_current_A_filt` は「復帰点の電流」ではなく、イベントの終盤の谷の電流として解釈する方が安全です。
+
+### 列の意味（概要）
+
+#### メタデータ（再現性）
+
+- `source_file_name`: 元データファイル名（`TraceData.source_file_name`）
+- `ADC_samplerate_Hz`: サンプルレート（時間換算に使用）
+- `LPFilter_cutoff_Hz`: フィルタ条件
+- `baseline_A`, `baseline_std_A`, `threshold_A`: 解析条件
+
+#### 位置（インデックス/時間）
+
+- `local_startpt`, `local_endpt`: セグメント内インデックス
+- `global_startpt`, `global_endpt`: 全体インデックス
+- `t_start_s`, `t_end_s`: 秒（`global_* / ADC_samplerate_Hz`）
+
+#### 注釈点の電流（filtered）
+
+- `start_current_A_filt`: start点の電流（A）
+- `end_current_A_filt`: end点の電流（A）
+
+#### 代表的なイベント特徴量
+
+- `deli_A`: ブロッケードの大きさ（概ね baseline からの落ち込み）
+- `frac`: `deli_A / baseline_A` に相当する比（無次元）
+- `dwell_us`: イベント滞在時間（μs）
+- `dt_s`: イベント間隔（秒）
+- `mean_A`, `stdev_A`, `skewness`, `kurtosis`: イベント区間の統計量
+
+※本CSVは「イベント（Event）を1行に要約する」用途に絞っているため、trough-to-trough（`*_tt_*`）やサブイベント（CUSUMState）に関する列は含めません。
+
+---
+
+## 🔻 サブイベント（CUSUMState）とプロット記号
+
+散布図は概ね次の対応です（`Painting.plotAnalysis()`参照）。
+
+- イベント（Event）: `symbol="o"`（丸）
+- サブイベント状態（CUSUMState）: `symbol="t"`（三角形。UI上で下向き矢印に見えることがあります）
+
+「サブイベントを持つイベント」は、矢印ではなく `N_child` に応じた色/サイズで区別されます。
+
+### 列の意味（詳細・一覧）
+
+| カラム | 単位 | 説明 |
+|---|---|---|
+| source_file_name | 文字列 | 元データ（トレース）ファイル名。後で元波形と突合する際の手がかり。 |
+| ADC_samplerate_Hz | Hz | サンプルレート。`t_start_s/t_end_s` の換算に使用。 |
+| LPFilter_cutoff_Hz | Hz | フィルタのカットオフ。フィルタ条件が違うと特徴量が変化するため記録。 |
+| baseline_A | A | baseline電流（解析条件）。 |
+| baseline_std_A | A | baselineノイズの標準偏差（解析条件）。 |
+| threshold_A | A | イベント検出の閾値（解析条件）。 |
+| event_id | なし | イベントの一意ID。 |
+| event_index | なし | イベントの連番インデックス。 |
+| seg | なし | セグメント番号（分割トレースの場合）。 |
+| local_startpt | サンプル | セグメント内の開始点インデックス。 |
+| local_endpt | サンプル | セグメント内の終了点インデックス（実装上、最後の谷に調整されることがあります）。 |
+| global_startpt | サンプル | 全体トレースの開始点インデックス。 |
+| global_endpt | サンプル | 全体トレースの終了点インデックス。 |
+| t_start_s | s | start時刻。`global_startpt / ADC_samplerate_Hz`。 |
+| t_end_s | s | end時刻。`global_endpt / ADC_samplerate_Hz`。 |
+| start_current_A_filt | A | start点でのfiltered電流値。 |
+| end_current_A_filt | A | end点でのfiltered電流値（baseline復帰点ではなく谷寄りの意味になる場合あり）。 |
+| deli_A | A | ブロッケードの大きさ（概ね baseline からの落ち込み）。 |
+| frac | なし | ブロッケード比（概ね `deli_A / baseline_A`）。 |
+| dwell_us | μs | イベント滞在時間。 |
+| dt_s | s | イベント間隔（開始点同士の時間差）。 |
+| mean_A | A | イベント区間の平均電流。 |
+| stdev_A | A | イベント区間の標準偏差。 |
+| skewness | なし | イベント区間分布の歪度。 |
+| kurtosis | なし | イベント区間分布の尖度。 |
+
 ### CUSUM (Cumulative Sum) アルゴリズム
 
 ```

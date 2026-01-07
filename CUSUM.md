@@ -70,3 +70,14 @@ cusum = {
 ## 用途
 
 このアルゴリズムは、イオンチャネルやナノポアを通過する分子が引き起こす**電流変化（サブイベント）**を検出するために設計されています。検出された各「状態」は、異なる電流レベルを表します。
+
+---
+
+## PythIonアプリ内での位置づけ（実装の補足）
+
+- **イベント検出（Event）**は主に閾値ベースで行われます（`Analysis.computeAnalysis()` 内で `seg_filt < threshold_A` を元に開始/終了を推定）。
+- **CUSUMはイベント内部のサブ状態（CUSUMState）検出**に使われます。
+    - 有効化は `enable_subevent_state_detection`
+    - 結果は `analysis_results.tables["CUSUMState"]` に入ります。
+- 可視化では、イベントは主に丸（`symbol="o"`）、CUSUMStateは三角形（`symbol="t"`）として散布図に描かれます。
+- CSVの `Export Event Points (CSV)` は基本的に Eventテーブル（1イベント=1行）を出力し、CUSUMState自体（サブイベント状態の可変長データ）は含めません。

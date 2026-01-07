@@ -3,6 +3,7 @@ import xml.etree.ElementTree as ET
 import pickle
 import os
 import yaml
+import csv
 
 import numpy as np
 from scipy import signal
@@ -229,6 +230,143 @@ class ExportEventsDialog(QtWidgets.QDialog):
 
 def exportEvents(app: BaseAppMainWindow):
     pass
+
+
+def exportEventPointsCSV(app: BaseAppMainWindow):
+    """Export per-event start/end points (option C) and event features to a CSV.
+
+    Start/end points correspond to the green/red markers in Painting.plotAnalysis:
+    - start: (global_startpt, seg_filt[local_startpt])
+    - end:   (global_endpt,   seg_filt[local_endpt])
+    """
+
+    analysis_results = getattr(app.perfiledata, "analysis_results", None)
+    if analysis_results is None:
+        app.printlog("No analysis results. Run Analyze first.")
+        return
+
+    event_table = analysis_results.tables.get("Event")
+    if event_table is None or len(event_table) == 0:
+        app.printlog('No "Event" table to export. Run Analyze first.')
+        return
+
+    samplerate = app.perfiledata.ADC_samplerate_Hz
+    if samplerate is None or not np.isfinite(samplerate) or samplerate <= 0:
+        app.printlog("Invalid samplerate; cannot compute event times.")
+        return
+
+    timestamp = app.getSaveTimeStamp()
+    default_path = app.perfiledata.matfilename + f"_{timestamp}_event_points.csv"
+    save_path, _ = QtWidgets.QFileDialog.getSaveFileName(
+        app,
+        "Export Event Points (CSV)",
+        default_path,
+        "CSV (*.csv)",
+    )
+    if not save_path:
+        return
+
+    analysis_config = analysis_results.analysis_config
+
+    def fmt_float(x: float) -> str:
+        try:
+            if x is None or not np.isfinite(x):
+                return ""
+            return f"{float(x):.18e}"
+        except Exception:
+            return ""
+
+    def fmt_int(x: int) -> str:
+        try:
+            return str(int(x))
+        except Exception:
+            return ""
+
+    header = [
+        "source_file_name",
+        "ADC_samplerate_Hz",
+        "LPFilter_cutoff_Hz",
+        "baseline_A",
+        "baseline_std_A",
+        "threshold_A",
+        "event_id",
+        "event_index",
+        "seg",
+        "local_startpt",
+        "local_endpt",
+        "global_startpt",
+        "global_endpt",
+        "t_start_s",
+        "t_end_s",
+        "start_current_A_filt",
+        "end_current_A_filt",
+        "deli_A",
+        "frac",
+        "dwell_us",
+        "dt_s",
+        "mean_A",
+        "stdev_A",
+        "skewness",
+        "kurtosis",
+    ]
+
+    source_file_name = getattr(app.perfiledata.data, "source_file_name", "") or ""
+
+    with open(save_path, "w", encoding="utf-8", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(header)
+
+        for ev in event_table:
+            seg = int(ev["seg"])
+            local_start = int(ev["local_startpt"])
+            local_end = int(ev["local_endpt"])
+            global_start = int(ev["global_startpt"])
+            global_end = int(ev["global_endpt"])
+
+            start_t_s = global_start / samplerate
+            end_t_s = global_end / samplerate
+
+            start_current = np.nan
+            end_current = np.nan
+            try:
+                seg_filt = app.perfiledata.data.filt[seg]
+                if 0 <= local_start < len(seg_filt):
+                    start_current = float(seg_filt[local_start])
+                if 0 <= local_end < len(seg_filt):
+                    end_current = float(seg_filt[local_end])
+            except Exception:
+                pass
+
+            row = [
+                source_file_name,
+                fmt_float(app.perfiledata.ADC_samplerate_Hz),
+                fmt_float(app.perfiledata.LPFilter_cutoff_Hz),
+                fmt_float(analysis_config.baseline_A),
+                fmt_float(analysis_config.baseline_std_A),
+                fmt_float(analysis_config.threshold_A),
+                fmt_int(ev["id"]),
+                fmt_int(ev["index"]),
+                fmt_int(seg),
+                fmt_int(local_start),
+                fmt_int(local_end),
+                fmt_int(global_start),
+                fmt_int(global_end),
+                fmt_float(start_t_s),
+                fmt_float(end_t_s),
+                fmt_float(start_current),
+                fmt_float(end_current),
+                fmt_float(ev["deli"]),
+                fmt_float(ev["frac"]),
+                fmt_float(ev["dwell"]),
+                fmt_float(ev["dt"]),
+                fmt_float(ev["mean"]),
+                fmt_float(ev["stdev"]),
+                fmt_float(ev["skewness"]),
+                fmt_float(ev["kurtosis"]),
+            ]
+            writer.writerow(row)
+
+    app.printlog(f"Exported {len(event_table):d} events to CSV: {save_path:s}")
 
 
 class ExportTraceSelectionDialog(QtWidgets.QDialog):
