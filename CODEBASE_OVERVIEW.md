@@ -5,12 +5,14 @@
 **PythIon** は、ナノポア電流データの解析・可視化を行うデスクトップGUIアプリケーションです。Wanunu Lab で内部利用されています。
 
 ### 主な目的
+
 - ナノポア実験から取得した電流トレースデータの読み込み・表示
 - イベント（電流変化）の自動検出
 - サブイベント状態（CUSUM法による）の検出
 - 解析結果の可視化とエクスポート
 
 ### 技術スタック
+
 | 分野 | 使用技術 |
 |------|----------|
 | GUI フレームワーク | PyQt5 |
@@ -95,6 +97,7 @@ class TraceData:
 ```
 
 **主要メソッド:**
+
 - `setOriginalData(raw, filt, source)` - 初期データ設定
 - `trim(trange)` - 指定範囲をカット
 - `invert()` - 電流符号を反転
@@ -147,6 +150,7 @@ class AnalysisResults:
 ```
 
 **結果テーブルのカラム:**
+
 | カラム | 型 | 説明 |
 |--------|-----|------|
 | id | int | 一意識別子 |
@@ -362,6 +366,7 @@ class AnalysisResults:
 ## 📝 主要メニューアクション
 
 ### File メニュー
+
 | アクション | 関数 | 説明 |
 |-----------|------|------|
 | Load | `IO.LoadFileDialog` | ファイル読み込み |
@@ -370,6 +375,7 @@ class AnalysisResults:
 | Save Segment Info | `IO.saveSegInfo()` | セグメント情報保存 |
 
 ### Edit メニュー
+
 | アクション | 関数 | 説明 |
 |-----------|------|------|
 | Cut | `Edits.doCut()` | 選択範囲をカット |
@@ -377,6 +383,7 @@ class AnalysisResults:
 | Invert Current Sign | `Edits.invertData()` | 電流符号反転 |
 
 ### Selection メニュー
+
 | アクション | ショートカット | 関数 |
 |-----------|--------------|------|
 | Auto Detect Clears | Alt+A | `Selections.autoFindCutLRs()` |
@@ -388,6 +395,7 @@ class AnalysisResults:
 | Inspect Selection | - | `Painting.inspectSelection()` |
 
 ### Analysis メニュー
+
 | アクション | 関数 | 説明 |
 |-----------|------|------|
 | Analyze | `Analysis.AnalyzeDialog` | イベント検出実行 |
@@ -401,6 +409,7 @@ class AnalysisResults:
 ### 新機能追加時のパターン
 
 1. **新しいダイアログを追加する場合:**
+
    ```python
    # 1. ui/ に .ui ファイルを作成 (Qt Designer)
    # 2. pyuic5 で .py に変換
@@ -415,6 +424,7 @@ class AnalysisResults:
    ```
 
 2. **新しい解析処理を追加する場合:**
+
    ```python
    # Analysis.py に処理関数を追加
    def myNewAnalysis(app: BaseAppMainWindow):
@@ -424,6 +434,7 @@ class AnalysisResults:
    ```
 
 3. **新しいプロットを追加する場合:**
+
    ```python
    # BaseApp.py の __init__ でプロット要素初期化
    self.my_plot = self.ui.myplotwidget.addPlot()
@@ -513,6 +524,7 @@ python -m PythIon
 ## 📄 ファイルフォーマット
 
 ### 入力ファイル
+
 | 拡張子 | 形式 | エンディアン |
 |--------|------|------------|
 | `.opt` | バイナリ (float64) | Big endian |
@@ -521,6 +533,7 @@ python -m PythIon
 | `.xml` | XMLメタデータ | - |
 
 ### 出力ファイル
+
 | 拡張子 | 内容 |
 |--------|------|
 | `.tracedata` | 処理済みトレースデータ |

@@ -77,7 +77,7 @@ cusum = {
 
 - **イベント検出（Event）**は主に閾値ベースで行われます（`Analysis.computeAnalysis()` 内で `seg_filt < threshold_A` を元に開始/終了を推定）。
 - **CUSUMはイベント内部のサブ状態（CUSUMState）検出**に使われます。
-    - 有効化は `enable_subevent_state_detection`
-    - 結果は `analysis_results.tables["CUSUMState"]` に入ります。
+  - 有効化は `enable_subevent_state_detection`
+  - 結果は `analysis_results.tables["CUSUMState"]` に入ります。
 - 可視化では、イベントは主に丸（`symbol="o"`）、CUSUMStateは三角形（`symbol="t"`）として散布図に描かれます。
 - CSVの `Export Event Points (CSV)` は基本的に Eventテーブル（1イベント=1行）を出力し、CUSUMState自体（サブイベント状態の可変長データ）は含めません。

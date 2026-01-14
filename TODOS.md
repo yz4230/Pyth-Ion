@@ -77,11 +77,13 @@ def _setupScatterPlot(self, widget, x_label, y_label, y_units=None):
 ### 4. ⭐⭐ 型ヒントの追加
 
 現在:
+
 ```python
 def computeAnalysis(app:BaseAppMainWindow):
 ```
 
 推奨:
+
 ```python
 def computeAnalysis(app: BaseAppMainWindow) -> None:
 ```
