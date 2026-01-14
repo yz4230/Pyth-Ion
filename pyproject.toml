@@ -1,10 +1,7 @@
 [project]
 name = "PythIon_Zhuoyu"
 dynamic = ["version"]
-authors = [
-    { name = "Zhuoyu" },
-    { name = "Bobby" }
-]
+authors = [{ name = "Zhuoyu" }, { name = "Bobby" }]
 description = "PythIon evolved and finally to be reimplemented with backend on Ioniq and a user-friendlier front UI. "
 readme = "README.md"
 dependencies = [
@@ -19,9 +16,7 @@ dependencies = [
     "pyinstaller>=6.18.0",
 ]
 requires-python = ">=3.11, <3.12"
-classifiers = [
-    "Private :: Do Not Upload"
-]
+classifiers = ["Private :: Do Not Upload"]
 
 [project.scripts]
 PythIon = "PythIon.entrypoint:entry"
@@ -31,12 +26,23 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.dynamic]
-version = {attr="PythIon.__version__.__version__"}
+version = { attr = "PythIon.__version__.__version__" }
 
 [tool.setuptools.packages.find]
-exclude = ["PythIon.backups*", "PythIon.build*", "PythIon.dist*", "PythIon.ioniq*", "PythIon.legacy*", "start_pythion.py"]
+exclude = [
+    "PythIon.backups*",
+    "PythIon.build*",
+    "PythIon.dist*",
+    "PythIon.ioniq*",
+    "PythIon.legacy*",
+    "start_pythion.py",
+]
+
+[tool.uv]
+required-environments = [
+    "sys_platform == 'win32' and platform_machine == 'AMD64'",
+    "sys_platform == 'darwin' and platform_machine == 'arm64'",
+]
 
 [dependency-groups]
-dev = [
-    "ruff>=0.14.7",
-]
+dev = ["ruff>=0.14.7"]
