@@ -15,7 +15,8 @@ dependencies = [
     "tqdm",
     "colorcet",
     "pyyaml",
-    "matplotlib"
+    "matplotlib",
+    "pyinstaller>=6.18.0",
 ]
 requires-python = ">=3.11, <3.12"
 classifiers = [
