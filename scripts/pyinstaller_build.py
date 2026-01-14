@@ -89,12 +89,24 @@ def build_onedir(
 
     platform_tag = _platform_tag()
 
-    # macOS + --windowed typically produces an .app bundle.
+    # macOS can produce either:
+    # - an .app bundle (typically with --windowed)
+    # - a normal onedir folder (console mode)
     if sys.platform == "darwin":
-        built_dir = distpath / f"{name}.app"
-        if not built_dir.exists():
-            raise FileNotFoundError(f"Expected PyInstaller .app not found: {built_dir}")
-        artifact_path = out_dir / f"{name}-{platform_tag}.app"
+        app_bundle = distpath / f"{name}.app"
+        onedir_dir = distpath / name
+
+        if app_bundle.exists():
+            built_dir = app_bundle
+            artifact_path = out_dir / f"{name}-{platform_tag}.app"
+        elif onedir_dir.exists():
+            built_dir = onedir_dir
+            artifact_path = out_dir / f"{name}-{platform_tag}"
+        else:
+            raise FileNotFoundError(
+                "Expected PyInstaller output not found. Looked for: "
+                f"{app_bundle} and {onedir_dir}"
+            )
     else:
         built_dir = distpath / name
         if not built_dir.exists():
