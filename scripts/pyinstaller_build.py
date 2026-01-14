@@ -68,8 +68,8 @@ def build_onedir(
         str(distpath),
         "--specpath",
         str(specpath),
-        # Hide console window (GUI app).
-        "--windowed",
+        # TODO: Some features may require a console
+        # "--windowed",
         # entrypoint.py uses runpy.run_module("PythIon.Pythion", ...), which PyInstaller
         # cannot statically analyze. Force inclusion of app submodules.
         "--collect-submodules",
