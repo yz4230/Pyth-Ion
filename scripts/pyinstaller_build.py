@@ -2,6 +2,7 @@ import argparse
 import os
 import platform
 from pathlib import Path
+import shutil
 
 import PyInstaller.__main__
 
@@ -21,6 +22,7 @@ def flatten_cmd(cmd: list[list[str] | str]) -> list[str]:
         else:
             flat_cmd.append(item)
     return flat_cmd
+
 
 def build(outdir: Path, name: str) -> Path:
     repo_root = Path(__file__).resolve().parents[1]
@@ -43,6 +45,7 @@ def build(outdir: Path, name: str) -> Path:
         "--clean",
         "--onedir",
         ["--name", name],
+        ["--paths", str(repo_root)],
         ["--workpath", str(workpath)],
         ["--distpath", str(distpath)],
         ["--specpath", str(specpath)],
@@ -58,8 +61,20 @@ def build(outdir: Path, name: str) -> Path:
     PyInstaller.__main__.run(cmd)
 
     artifact_name = f"{name}-{platform_tag()}"
-    artifact_path = outdir / artifact_name
-    return artifact_path
+    dist_artifact = distpath / name
+    if not dist_artifact.exists():
+        raise FileNotFoundError(f"Missing PyInstaller output: {dist_artifact}")
+
+    archive_path = outdir / f"{artifact_name}.zip"
+    if archive_path.exists():
+        archive_path.unlink()
+
+    shutil.make_archive(
+        str(archive_path.with_suffix("")),
+        format="zip",
+        root_dir=dist_artifact,
+    )
+    return archive_path
 
 
 def main() -> None:
