@@ -23,6 +23,7 @@ def flatten_cmd(cmd: list[list[str] | str]) -> list[str]:
             flat_cmd.append(item)
     return flat_cmd
 
+
 def build(outdir: Path, name: str) -> Path:
     repo_root = Path(__file__).resolve().parents[1]
     entry_script = repo_root / "scripts" / "pyinstaller_entry.py"
@@ -60,12 +61,7 @@ def build(outdir: Path, name: str) -> Path:
     PyInstaller.__main__.run(cmd)
 
     artifact_name = f"{name}-{platform_tag()}"
-    system = platform.system().lower()
-    if system == "darwin":
-        dist_artifact = distpath / f"{name}.app"
-    else:
-        dist_artifact = distpath / name
-
+    dist_artifact = distpath / name
     if not dist_artifact.exists():
         raise FileNotFoundError(f"Missing PyInstaller output: {dist_artifact}")
 
@@ -73,7 +69,11 @@ def build(outdir: Path, name: str) -> Path:
     if archive_path.exists():
         archive_path.unlink()
 
-    shutil.make_archive(str(archive_path.with_suffix("")), "zip", root_dir=dist_artifact)
+    shutil.make_archive(
+        str(archive_path.with_suffix("")),
+        format="zip",
+        root_dir=dist_artifact,
+    )
     return archive_path
 
 
