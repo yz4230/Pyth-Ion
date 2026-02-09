@@ -17,11 +17,11 @@ jobs:
           - name: windows/amd64
             os: windows-latest
             artifact_name: PythIon-windows-amd64
-            artifact_path: build/PythIon-windows-amd64
+            artifact_path: build/PythIon-windows-amd64.zip
           - name: darwin/arm64
             os: macos-14
             artifact_name: PythIon-darwin-arm64
-            artifact_path: build/PythIon-darwin-arm64.app
+            artifact_path: build/PythIon-darwin-arm64.zip
 
     steps:
       - name: Checkout

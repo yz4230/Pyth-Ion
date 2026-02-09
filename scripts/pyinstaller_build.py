@@ -2,6 +2,7 @@ import argparse
 import os
 import platform
 from pathlib import Path
+import shutil
 
 import PyInstaller.__main__
 
@@ -59,8 +60,21 @@ def build(outdir: Path, name: str) -> Path:
     PyInstaller.__main__.run(cmd)
 
     artifact_name = f"{name}-{platform_tag()}"
-    artifact_path = outdir / artifact_name
-    return artifact_path
+    system = platform.system().lower()
+    if system == "darwin":
+        dist_artifact = distpath / f"{name}.app"
+    else:
+        dist_artifact = distpath / name
+
+    if not dist_artifact.exists():
+        raise FileNotFoundError(f"Missing PyInstaller output: {dist_artifact}")
+
+    archive_path = outdir / f"{artifact_name}.zip"
+    if archive_path.exists():
+        archive_path.unlink()
+
+    shutil.make_archive(str(archive_path.with_suffix("")), "zip", root_dir=dist_artifact)
+    return archive_path
 
 
 def main() -> None:
