@@ -2,7 +2,6 @@ import argparse
 import os
 import platform
 from pathlib import Path
-from typing import cast
 
 import PyInstaller.__main__
 
@@ -13,6 +12,15 @@ def platform_tag() -> str:
     machine = uname.machine.lower()
     return f"{os_name}-{machine}"
 
+
+def flatten_cmd(cmd: list[list[str] | str]) -> list[str]:
+    flat_cmd: list[str] = []
+    for item in cmd:
+        if isinstance(item, list):
+            flat_cmd.extend(item)
+        else:
+            flat_cmd.append(item)
+    return flat_cmd
 
 def build(outdir: Path, name: str) -> Path:
     repo_root = Path(__file__).resolve().parents[1]
@@ -44,7 +52,7 @@ def build(outdir: Path, name: str) -> Path:
         ["--collect-all", "PyQt5"],
         str(entry_script),
     ]
-    cmd = cast(list[str], list(sum(cmd, [])))
+    cmd = flatten_cmd(cmd)
 
     print(f"Running PyInstaller with command: {' '.join(map(str, cmd))}")
     PyInstaller.__main__.run(cmd)
