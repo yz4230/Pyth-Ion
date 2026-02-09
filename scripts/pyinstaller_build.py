@@ -43,6 +43,7 @@ def build(outdir: Path, name: str) -> Path:
         "--clean",
         "--onedir",
         ["--name", name],
+        ["--paths", str(repo_root)],
         ["--workpath", str(workpath)],
         ["--distpath", str(distpath)],
         ["--specpath", str(specpath)],
