@@ -46,4 +46,7 @@ required-environments = [
 ]
 
 [dependency-groups]
-dev = ["ruff>=0.14.7"]
+dev = [
+    "ruff>=0.14.7",
+    "ty>=0.0.21",
+]
