@@ -153,6 +153,7 @@ def _preprocess_data(
         Preprocessed data, or None if data is too short.
     """
     if window <= 0:
+        # Keep window=0 usable even though the legacy implementation crashes.
         return data.copy()
 
     smoothed = _central_moving_average(data, window)
@@ -393,7 +394,8 @@ class CUSUMDetector:
         data : npt.NDArray[np.floating]
             Input time series data.
         max_states : int, optional
-            Maximum allowed states. If exceeded, threshold is relaxed.
+            Maximum allowed detected jumps before the final terminal edge is
+            added, matching the legacy CUSUMV3.detect_cusum behavior.
             Use -1 for no limit, 0 for single state.
 
         Returns
@@ -415,8 +417,9 @@ class CUSUMDetector:
             self.stepsize = current_stepsize
 
             n_states = self._detect_single_pass(data)
+            detected_jumps = n_states - 1
 
-            if max_states < 0 or n_states <= max_states:
+            if max_states < 0 or detected_jumps <= max_states:
                 break
 
             # Relax parameters if too many states detected
@@ -465,7 +468,8 @@ def detect_cusumv2(
     minlength : int, default=1000
         Minimum number of samples between detected changes.
     maxstates : int, default=-1
-        Maximum number of states. If exceeded, threshold is relaxed.
+        Maximum number of detected jumps before the final terminal edge is
+        added. This matches the legacy CUSUMV3.detect_cusum behavior.
         Use 0 for single state, -1 for unlimited.
     moving_oneside_window : int, default=0
         Window size for preprocessing filters. Use 0 to skip preprocessing.
