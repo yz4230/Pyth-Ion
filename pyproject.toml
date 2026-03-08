@@ -14,6 +14,7 @@ dependencies = [
     "pyyaml",
     "matplotlib",
     "pyinstaller>=6.18.0",
+    "pandas>=3.0.1",
 ]
 requires-python = ">=3.11, <3.12"
 classifiers = ["Private :: Do Not Upload"]
@@ -45,4 +46,7 @@ required-environments = [
 ]
 
 [dependency-groups]
-dev = ["ruff>=0.14.7"]
+dev = [
+    "ruff>=0.14.7",
+    "ty>=0.0.21",
+]
