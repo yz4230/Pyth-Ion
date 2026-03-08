@@ -1,19 +1,18 @@
 # -*- coding: utf-8 -*-
+import multiprocessing as mp
 import os
 from functools import partial
-from tqdm import tqdm
-from scipy import signal
-import numpy as np
-import scipy.stats as spstat
-import multiprocessing as mp
 from multiprocessing import shared_memory
 
-from PythIon.cusumv3_1 import detect_cusumv2
+import numpy as np
+import scipy.stats as spstat
+from scipy import signal
+from tqdm import tqdm
 
 from .BaseApp import *
-from .ui.subeventstatesettings import *
-from .ui.analysissettings import *
 from .CUSUMV3 import detect_cusum
+from .ui.analysissettings import *
+from .ui.subeventstatesettings import *
 
 
 class Config:
@@ -230,7 +229,7 @@ def cusum_worker_(
     trough_trough_data = np.ndarray(data_shape, dtype=data_dtype, buffer=shm.buf)[
         startpoint:endpoint
     ]
-    cusum_res = detect_cusumv2(
+    cusum_res = detect_cusum(
         trough_trough_data,
         cusum_std,
         minlength=cusum_minlen,

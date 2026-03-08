@@ -6,7 +6,7 @@ import numpy.typing as npt
 import pandas as pd
 from scipy import signal, stats
 
-from PythIon.cusumv3_1 import CUSUMResultDict, detect_cusumv2
+from .cusumv3 import CUSUMResultDict, detect_cusumv2
 
 
 @dataclass(kw_only=True, frozen=True)
