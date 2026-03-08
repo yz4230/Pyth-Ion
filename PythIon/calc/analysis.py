@@ -1,8 +1,12 @@
-import numpy as np
 from dataclasses import dataclass
+from typing import TypedDict
 
+import numpy as np
+import numpy.typing as npt
 import pandas as pd
 from scipy import signal, stats
+
+from PythIon.cusumv3_1 import CUSUMResultDict, detect_cusumv2
 
 
 @dataclass(kw_only=True, frozen=True)
@@ -25,7 +29,33 @@ class AnalysisConfig:
     state_min_duration_us: int = 150
 
 
-DF_HEADERS = [
+@dataclass(kw_only=True, frozen=True)
+class AnalysisTables:
+    events: pd.DataFrame
+    states: pd.DataFrame
+    n_children: npt.NDArray[np.int64]
+
+
+class MergedCUSUMResult(TypedDict):
+    nStates: int
+    starts: npt.NDArray[np.int64]
+
+
+class StateRow(TypedDict):
+    parent_index: int
+    index: int
+    start_point: int
+    end_point: int
+    delli: float
+    frac: float
+    dwell: float
+    mean: float
+    stdev: float
+    skewness: float
+    kurtosis: float
+
+
+EVENT_HEADERS = [
     "index",
     "start_point",
     "end_point",
@@ -43,20 +73,70 @@ DF_HEADERS = [
     "kurtosis_tt",
 ]
 
+STATE_HEADERS = [
+    "parent_index",
+    "index",
+    "start_point",
+    "end_point",
+    "delli",
+    "frac",
+    "dwell",
+    "mean",
+    "stdev",
+    "skewness",
+    "kurtosis",
+]
 
-def analyze(*, data: np.ndarray, iconf: InputConfig, aconf: AnalysisConfig):
+
+def _empty_event_df() -> pd.DataFrame:
+    return pd.DataFrame(columns=EVENT_HEADERS)
+
+
+def _empty_state_df() -> pd.DataFrame:
+    return pd.DataFrame(columns=STATE_HEADERS)
+
+
+def merge_oversegmentation(
+    trough_trough_data: npt.NDArray[np.float64],
+    cusum_res: CUSUMResultDict,
+    merge_delta_i: float,
+) -> MergedCUSUMResult:
+    state_starts = cusum_res["starts"]
+    n_states = cusum_res["nStates"]
+
+    def get_data(state_index: int) -> npt.NDArray[np.float64]:
+        return trough_trough_data[
+            state_starts[state_index] : state_starts[state_index + 1]
+        ]
+
+    mean_i_1 = np.mean(get_data(0))
+    starts_to_retain = [0]
+    for state_index in range(n_states - 1):
+        mean_i_0 = mean_i_1
+        mean_i_1 = np.mean(get_data(state_index + 1))
+        if abs(mean_i_1 - mean_i_0) > merge_delta_i:
+            starts_to_retain.append(state_index + 1)
+    starts_to_retain.append(n_states)
+    return {
+        "nStates": len(starts_to_retain) - 1,
+        "starts": np.array([state_starts[idx] for idx in starts_to_retain]),
+    }
+
+
+def analyze_tables(
+    *, data: npt.NDArray[np.float64], iconf: InputConfig, aconf: AnalysisConfig
+) -> AnalysisTables:
     if iconf.adc_samplerate_hz <= 0:
         raise ValueError("adc_samplerate_hz must be positive")
-
-    # cusum_min_len = int(aconf.state_min_duration_us * iconf.adc_samplerate_hz * 1e-6)
-    # prefilt_oneside_window = int(aconf.prefilt_window_us / 2 * iconf.adc_samplerate_hz * 1e-6)  # fmt: skip
-    # cusum_max_states = aconf.max_states - 1
-    # merge_delta_i = aconf.merge_delta_blockade * aconf.baseline_A
 
     (below,) = np.where(data < aconf.threshold_a)
     start_and_end = np.diff(below)
     if len(start_and_end) == 0:
-        return pd.DataFrame(columns=DF_HEADERS)
+        return AnalysisTables(
+            events=_empty_event_df(),
+            states=_empty_state_df(),
+            n_children=np.array([], dtype=np.int64),
+        )
 
     start_points = np.insert(start_and_end, 0, 2)
     end_points = np.insert(start_and_end, -1, 2)
@@ -66,12 +146,20 @@ def analyze(*, data: np.ndarray, iconf: InputConfig, aconf: AnalysisConfig):
     end_points = below[end_points]
 
     if start_points.size == 0:
-        return pd.DataFrame(columns=DF_HEADERS)
+        return AnalysisTables(
+            events=_empty_event_df(),
+            states=_empty_state_df(),
+            n_children=np.array([], dtype=np.int64),
+        )
     if start_points[0] == 0:
         start_points = start_points[1:]
         end_points = end_points[1:]
     if end_points.size == 0:
-        return pd.DataFrame(columns=DF_HEADERS)
+        return AnalysisTables(
+            events=_empty_event_df(),
+            states=_empty_state_df(),
+            n_children=np.array([], dtype=np.int64),
+        )
     if end_points[-1] == data.size - 1:
         start_points = start_points[:-1]
         end_points = end_points[:-1]
@@ -79,34 +167,37 @@ def analyze(*, data: np.ndarray, iconf: InputConfig, aconf: AnalysisConfig):
     number_of_events = start_points.size
     high_thresh = aconf.baseline_a - aconf.baseline_std_a
 
-    for i in range(number_of_events):
-        sp = start_points[i]
-        while sp > 0 and data[sp] < high_thresh:
-            sp -= 1
-        start_points[i] = sp
+    for event_index in range(number_of_events):
+        start_point = start_points[event_index]
+        while start_point > 0 and data[start_point] < high_thresh:
+            start_point -= 1
+        start_points[event_index] = start_point
 
-        ep = end_points[i]
-        if ep == data.size - 1:
-            start_points[i] = 0
-            end_points[i] = 0
-            ep = 0
+        end_point = end_points[event_index]
+        if end_point == data.size - 1:
+            start_points[event_index] = 0
+            end_points[event_index] = 0
+            end_point = 0
             break
 
-        while data[ep] < high_thresh:
-            ep += 1
-            if ep == data.size - 1:
-                start_points[i] = 0
-                end_points[i] = 0
-                ep = 0
+        while data[end_point] < high_thresh:
+            end_point += 1
+            if end_point == data.size - 1:
+                start_points[event_index] = 0
+                end_points[event_index] = 0
+                end_point = 0
                 break
 
-            if i + 1 < number_of_events and ep > start_points[i + 1]:
-                start_points[i + 1] = 0
-                end_points[i] = 0
-                ep = 0
+            if (
+                event_index + 1 < number_of_events
+                and end_point > start_points[event_index + 1]
+            ):
+                start_points[event_index + 1] = 0
+                end_points[event_index] = 0
+                end_point = 0
                 break
 
-        end_points[i] = ep
+        end_points[event_index] = end_point
 
     start_points = start_points[start_points != 0]
     end_points = end_points[end_points != 0]
@@ -120,21 +211,36 @@ def analyze(*, data: np.ndarray, iconf: InputConfig, aconf: AnalysisConfig):
     dwells = np.zeros(number_of_events)
     first_min_offsets = np.full(number_of_events, -1, dtype=np.int32)
 
-    for i in range(number_of_events):
-        (relmin,) = signal.argrelmin(data[start_points[i] : end_points[i]])
-        mins = np.array(relmin + start_points[i])
-        cut = (aconf.baseline_a + np.mean(data[start_points[i] : end_points[i]])) / 2
+    for event_index in range(number_of_events):
+        (relmin,) = signal.argrelmin(
+            data[start_points[event_index] : end_points[event_index]]
+        )
+        mins = np.array(relmin + start_points[event_index])
+        cut = (
+            aconf.baseline_a
+            + np.mean(data[start_points[event_index] : end_points[event_index]])
+        ) / 2
         mins = mins[data[mins] < cut]
         if len(mins) == 1:
-            delis[i] = aconf.baseline_a - min(data[start_points[i] : end_points[i]])
-            dwells[i] = ((end_points[i] - start_points[i]) / iconf.adc_samplerate_hz * 1e6)  # fmt: skip
-            end_points[i] = mins[0]
-            first_min_offsets[i] = -2
+            delis[event_index] = aconf.baseline_a - min(
+                data[start_points[event_index] : end_points[event_index]]
+            )
+            dwells[event_index] = (
+                (end_points[event_index] - start_points[event_index])
+                / iconf.adc_samplerate_hz
+                * 1e6
+            )
+            end_points[event_index] = mins[0]
+            first_min_offsets[event_index] = -2
         elif len(mins) > 1:
-            delis[i] = aconf.baseline_a - np.mean(data[mins[0] : mins[-1]])
-            end_points[i] = mins[-1]
-            dwells[i] = (end_points[i] - start_points[i]) / iconf.adc_samplerate_hz * 1e6  # fmt: skip
-            first_min_offsets[i] = mins[0] - start_points[i]
+            delis[event_index] = aconf.baseline_a - np.mean(data[mins[0] : mins[-1]])
+            end_points[event_index] = mins[-1]
+            dwells[event_index] = (
+                (end_points[event_index] - start_points[event_index])
+                / iconf.adc_samplerate_hz
+                * 1e6
+            )
+            first_min_offsets[event_index] = mins[0] - start_points[event_index]
 
     valid_events = np.logical_and(delis != 0, dwells != 0)
     start_points = start_points[valid_events]
@@ -145,14 +251,18 @@ def analyze(*, data: np.ndarray, iconf: InputConfig, aconf: AnalysisConfig):
     fracs = delis / aconf.baseline_a
     number_of_events = start_points.size
     if number_of_events == 0:
-        return pd.DataFrame(columns=DF_HEADERS)
+        return AnalysisTables(
+            events=_empty_event_df(),
+            states=_empty_state_df(),
+            n_children=np.array([], dtype=np.int64),
+        )
 
     dts = np.empty(number_of_events, dtype=np.float64)
     dts[0] = np.nan
     if number_of_events > 1:
         dts[1:] = np.diff(start_points) / iconf.adc_samplerate_hz
 
-    baseline = np.empty(number_of_events, dtype=np.float64)
+    means = np.empty(number_of_events, dtype=np.float64)
     noise = np.empty(number_of_events, dtype=np.float64)
     skew = np.empty(number_of_events, dtype=np.float64)
     kurt = np.empty(number_of_events, dtype=np.float64)
@@ -160,22 +270,24 @@ def analyze(*, data: np.ndarray, iconf: InputConfig, aconf: AnalysisConfig):
     skew_tt = np.full(number_of_events, np.nan)
     kurt_tt = np.full(number_of_events, np.nan)
 
-    for idx, (start_point, end_point) in enumerate(zip(start_points, end_points)):
+    for event_index, (start_point, end_point) in enumerate(
+        zip(start_points, end_points)
+    ):
         segment = data[start_point:end_point]
-        baseline[idx] = np.mean(segment)
-        noise[idx] = np.std(segment)
-        skew[idx] = stats.skew(segment)
-        kurt[idx] = stats.kurtosis(segment)
+        means[event_index] = np.mean(segment)
+        noise[event_index] = np.std(segment)
+        skew[event_index] = stats.skew(segment)
+        kurt[event_index] = stats.kurtosis(segment)
 
-        first_min_offset = first_min_offsets[idx]
+        first_min_offset = first_min_offsets[event_index]
         if first_min_offset > 0:
             trough = data[start_point + first_min_offset : end_point]
             if trough.size != 0:
-                stdev_tt[idx] = np.std(trough)
-                skew_tt[idx] = stats.skew(trough)
-                kurt_tt[idx] = stats.kurtosis(trough)
+                stdev_tt[event_index] = np.std(trough)
+                skew_tt[event_index] = stats.skew(trough)
+                kurt_tt[event_index] = stats.kurtosis(trough)
 
-    return pd.DataFrame(
+    events = pd.DataFrame(
         {
             "index": np.arange(number_of_events),
             "start_point": start_points,
@@ -184,7 +296,7 @@ def analyze(*, data: np.ndarray, iconf: InputConfig, aconf: AnalysisConfig):
             "dwell": dwells,
             "frac": fracs,
             "dt": dts,
-            "mean": baseline,
+            "mean": means,
             "stdev": noise,
             "skewness": skew,
             "kurtosis": kurt,
@@ -192,5 +304,85 @@ def analyze(*, data: np.ndarray, iconf: InputConfig, aconf: AnalysisConfig):
             "stdev_tt": stdev_tt,
             "skewness_tt": skew_tt,
             "kurtosis_tt": kurt_tt,
-        }
+        },
+        columns=EVENT_HEADERS,
     )
+
+    n_children = np.zeros(number_of_events, dtype=np.int64)
+    if not aconf.enable_subevent_state_detection:
+        return AnalysisTables(
+            events=events, states=_empty_state_df(), n_children=n_children
+        )
+
+    cusum_min_len = int(aconf.state_min_duration_us * iconf.adc_samplerate_hz * 1e-6)
+    prefilt_oneside_window = int(
+        aconf.prefilt_window_us / 2 * iconf.adc_samplerate_hz * 1e-6
+    )
+    cusum_max_states = aconf.max_states - 1
+    merge_delta_i = aconf.merge_delta_blockade * aconf.baseline_a
+
+    state_rows: list[StateRow] = []
+    for event_index, (start_point, end_point) in enumerate(
+        zip(start_points, end_points)
+    ):
+        first_min_offset = first_min_offsets[event_index]
+        if first_min_offset <= 0:
+            continue
+
+        trough = data[start_point + first_min_offset : end_point]
+        if trough.size < cusum_min_len:
+            continue
+
+        cusum_res = detect_cusumv2(
+            trough,
+            aconf.baseline_std_a,
+            minlength=cusum_min_len,
+            maxstates=cusum_max_states,
+            stepsize=aconf.cusum_stepsize,
+            threshhold=aconf.cusum_threshhold,
+            moving_oneside_window=prefilt_oneside_window,
+        )
+        merged_cusum_res = merge_oversegmentation(trough, cusum_res, merge_delta_i)
+        n_children[event_index] = merged_cusum_res["nStates"]
+
+        if merged_cusum_res["nStates"] <= 1:
+            continue
+
+        for state_index in range(merged_cusum_res["nStates"]):
+            state_start = int(merged_cusum_res["starts"][state_index])
+            state_end = int(merged_cusum_res["starts"][state_index + 1])
+            state_data = trough[state_start:state_end]
+            state_mean = float(np.mean(state_data))
+            state_delli = float(aconf.baseline_a - state_mean)
+            state_rows.append(
+                {
+                    "parent_index": event_index,
+                    "index": state_index,
+                    "start_point": state_start + first_min_offset + start_point,
+                    "end_point": state_end + first_min_offset + start_point,
+                    "delli": state_delli,
+                    "frac": float(state_delli / aconf.baseline_a),
+                    "dwell": float(len(state_data) / iconf.adc_samplerate_hz * 1e6),
+                    "mean": state_mean,
+                    "stdev": float(np.std(state_data)),
+                    "skewness": float(stats.skew(state_data)),
+                    "kurtosis": float(stats.kurtosis(state_data)),
+                }
+            )
+
+    if state_rows:
+        states = pd.DataFrame(state_rows, columns=STATE_HEADERS)
+    else:
+        states = _empty_state_df()
+
+    return AnalysisTables(events=events, states=states, n_children=n_children)
+
+
+def analyze(
+    *, data: npt.NDArray[np.float64], iconf: InputConfig, aconf: AnalysisConfig
+) -> pd.DataFrame:
+    tables = analyze_tables(data=data, iconf=iconf, aconf=aconf)
+    events = tables.events.copy()
+    events.attrs["CUSUMState"] = tables.states
+    events.attrs["n_children"] = tables.n_children
+    return events
