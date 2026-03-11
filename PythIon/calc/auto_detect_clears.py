@@ -82,8 +82,14 @@ def detect_clear_regions(
     current_endpoint = 0
     last_sample = signal.size - 1
 
-    for spike_start in spike_indices:
+    spike_pos = 0
+    n_spikes = spike_indices.size
+    while spike_pos < n_spikes:
+        spike_start = int(spike_indices[spike_pos])
         if spike_start < current_endpoint:
+            spike_pos += int(
+                np.searchsorted(spike_indices[spike_pos:], current_endpoint)
+            )
             continue
 
         baseline_cursor += int(
@@ -109,6 +115,7 @@ def detect_clear_regions(
 
         current_endpoint = min(region_end, last_sample)
         regions.append((region_start, region_end))
+        spike_pos += 1
 
     if not regions:
         return np.empty((0, 2), dtype=int)

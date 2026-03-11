@@ -5,7 +5,6 @@ This module implements a CUSUM-based algorithm for detecting abrupt changes
 in time series data, commonly used in nanopore sensing and ion channel analysis.
 """
 
-from dataclasses import dataclass
 from typing import Optional, TypedDict
 
 import numpy as np
@@ -20,25 +19,6 @@ class CUSUMResultDict(TypedDict):
     starts: npt.NDArray[np.int64]
     threshold: float
     stepsize: float
-
-
-@dataclass
-class CUSUMResult:
-    """Result container for CUSUM detection."""
-
-    n_states: int
-    starts: npt.NDArray[np.int64]
-    threshold: float
-    stepsize: float
-
-    def to_dict(self) -> CUSUMResultDict:
-        """Convert to dictionary format for backward compatibility."""
-        return {
-            "nStates": self.n_states,
-            "starts": self.starts,
-            "threshold": self.threshold,
-            "stepsize": self.stepsize,
-        }
 
 
 def _central_moving_average(
@@ -177,264 +157,104 @@ def _create_single_state_result(
     }
 
 
-def _compute_log_likelihoods(
-    current_value: float,
-    mean: float,
-    variance: float,
+def _cusum_single_pass(
+    data: npt.NDArray[np.floating],
     base_sd: float,
+    threshold: float,
     stepsize: float,
-) -> tuple[float, float]:
+    min_length: int,
+) -> tuple[int, list[int]]:
     """
-    Compute instantaneous log-likelihoods for positive and negative jumps.
+    Core CUSUM detection loop with inlined computations for performance.
 
-    Parameters
-    ----------
-    current_value : float
-        Current data point.
-    mean : float
-        Running mean of data since last anchor.
-    variance : float
-        Running variance of data since last anchor.
-    base_sd : float
-        Baseline standard deviation.
-    stepsize : float
-        Expected jump size in units of base_sd.
+    All per-sample statistics (Welford variance, log-likelihoods, cumulative
+    sums) are computed using local variables to avoid method-call and
+    attribute-lookup overhead.  Cumulative-sum arrays are only zeroed at the
+    current position on reset instead of across the full length.
 
     Returns
     -------
-    tuple[float, float]
-        (log_likelihood_positive, log_likelihood_negative)
+    tuple[int, list[int]]
+        (n_states, edges) where *edges* is a list of boundary indices
+        including the leading ``0`` and the trailing ``len(data)``.
     """
+    length = len(data)
+    cpos = np.zeros(length, dtype=np.float64)
+    cneg = np.zeros(length, dtype=np.float64)
+    gpos = np.zeros(length, dtype=np.float64)
+    gneg = np.zeros(length, dtype=np.float64)
+
+    base_variance = base_sd * base_sd
     delta = stepsize * base_sd
-    scale = delta / variance
-    deviation = current_value - mean
+    delta_half = delta * 0.5
 
-    log_pos = scale * (deviation - delta / 2)
-    log_neg = -scale * (deviation + delta / 2)
+    # Welford online variance – local scalars avoid object/attribute overhead
+    w_m = float(data[0])
+    w_s = 0.0
+    w_count = 1
 
-    return log_pos, log_neg
+    edges: list[int] = [0]
+    anchor = 0
 
+    for k in range(1, length):
+        val = float(data[k])
 
-class WelfordVariance:
-    """Online algorithm for computing running mean and variance (Welford's method)."""
+        # --- Welford update ---
+        w_count += 1
+        old_m = w_m
+        w_m += (val - w_m) / w_count
+        w_s += (val - old_m) * (val - w_m)
 
-    mean: float
-    _m: float
-    _s: float
-    _count: int
+        variance = w_s / w_count
+        if variance <= 0.0:
+            variance = base_variance
 
-    def __init__(self, initial_value: float) -> None:
-        self.mean = initial_value
-        self._m = initial_value
-        self._s = 0.0
-        self._count = 1
+        # --- log-likelihood for positive / negative jumps ---
+        scale = delta / variance
+        deviation = val - w_m
+        log_pos = scale * (deviation - delta_half)
+        log_neg = -scale * (deviation + delta_half)
 
-    def update(self, value: float) -> None:
-        """Add a new value and update statistics."""
-        self._count += 1
-        old_m = self._m
-        self._m += (value - self._m) / self._count
-        self._s += (value - old_m) * (value - self._m)
-        self.mean = self._m
+        # --- cumulative & decision sums ---
+        prev = k - 1
+        cp = cpos[prev] + log_pos
+        cn = cneg[prev] + log_neg
+        gp = gpos[prev] + log_pos
+        if gp < 0.0:
+            gp = 0.0
+        gn = gneg[prev] + log_neg
+        if gn < 0.0:
+            gn = 0.0
 
-    @property
-    def variance(self) -> float:
-        """Current variance estimate."""
-        return self._s / self._count if self._count > 0 else 0.0
+        cpos[k] = cp
+        cneg[k] = cn
+        gpos[k] = gp
+        gneg[k] = gn
 
-    def reset(self, initial_value: float) -> None:
-        """Reset statistics with a new initial value."""
-        self.__init__(initial_value)
+        # --- threshold check ---
+        if gp > threshold or gn > threshold:
+            if gp > threshold:
+                jump = int(anchor + np.argmin(cpos[anchor : k + 1]))
+                if jump - edges[-1] > min_length:
+                    edges.append(jump)
 
+            if gn > threshold:
+                jump = int(anchor + np.argmin(cneg[anchor : k + 1]))
+                if jump - edges[-1] > min_length:
+                    edges.append(jump)
 
-class CUSUMDetector:
-    """
-    CUSUM-based change point detector.
+            # Reset only the current position (not the full array)
+            anchor = k
+            cpos[k] = 0.0
+            cneg[k] = 0.0
+            gpos[k] = 0.0
+            gneg[k] = 0.0
+            w_m = val
+            w_s = 0.0
+            w_count = 1
 
-    This detector identifies abrupt changes in time series data using
-    cumulative sum statistics with adaptive thresholding.
-    """
-
-    base_sd: float
-    threshold: float
-    stepsize: float
-    min_length: int
-    _edges: list[int]
-    _anchor: int
-    _cpos: Optional[npt.NDArray[np.float64]]
-    _cneg: Optional[npt.NDArray[np.float64]]
-    _gpos: Optional[npt.NDArray[np.float64]]
-    _gneg: Optional[npt.NDArray[np.float64]]
-    _stats: Optional[WelfordVariance]
-
-    def __init__(
-        self,
-        base_sd: float,
-        threshold: float = 10.0,
-        stepsize: float = 3.0,
-        min_length: int = 1000,
-    ) -> None:
-        self.base_sd = base_sd
-        self.threshold = threshold
-        self.stepsize = stepsize
-        self.min_length = min_length
-        self._reset()
-
-    def _reset(self) -> None:
-        """Reset internal state for a new detection run."""
-        self._edges = [0]
-        self._anchor = 0
-        self._cpos = None
-        self._cneg = None
-        self._gpos = None
-        self._gneg = None
-        self._stats = None
-
-    def _initialize_arrays(self, length: int) -> None:
-        """Initialize cumulative and decision arrays."""
-        self._cpos = np.zeros(length, dtype=np.float64)
-        self._cneg = np.zeros(length, dtype=np.float64)
-        self._gpos = np.zeros(length, dtype=np.float64)
-        self._gneg = np.zeros(length, dtype=np.float64)
-
-    def _reset_arrays(self) -> None:
-        """Reset all cumulative arrays to zero."""
-        assert self._cpos is not None and self._cneg is not None
-        assert self._gpos is not None and self._gneg is not None
-        self._cpos.fill(0)
-        self._cneg.fill(0)
-        self._gpos.fill(0)
-        self._gneg.fill(0)
-
-    def _find_jump_location(
-        self,
-        cumsum_array: npt.NDArray[np.float64],
-        end: int,
-    ) -> int:
-        """Find the location of jump start using minimum of cumulative sum."""
-        return int(self._anchor + np.argmin(cumsum_array[self._anchor : end + 1]))
-
-    def _process_jump(self, jump_location: int) -> bool:
-        """
-        Process a detected jump and add edge if valid.
-
-        Returns True if edge was added.
-        """
-        n_states = len(self._edges) - 1
-        if jump_location - self._edges[n_states] > self.min_length:
-            self._edges.append(jump_location)
-            return True
-        return False
-
-    def _detect_single_pass(self, data: npt.NDArray[np.floating]) -> int:
-        """
-        Run a single pass of CUSUM detection.
-
-        Returns the number of detected states.
-        """
-
-        length = len(data)
-        self._initialize_arrays(length)
-        self._stats = WelfordVariance(data[0])
-        base_variance = self.base_sd**2
-
-        assert self._cpos is not None and self._cneg is not None
-        assert self._gpos is not None and self._gneg is not None
-
-        for k in range(1, length):
-            self._stats.update(data[k])
-
-            # Use baseline variance if running variance is zero
-            variance = (
-                self._stats.variance if self._stats.variance > 0 else base_variance
-            )
-
-            # Compute log-likelihoods
-            log_pos, log_neg = _compute_log_likelihoods(
-                data[k], self._stats.mean, variance, self.base_sd, self.stepsize
-            )
-
-            # Update cumulative sums
-            self._cpos[k] = self._cpos[k - 1] + log_pos
-            self._cneg[k] = self._cneg[k - 1] + log_neg
-
-            # Update decision functions (reset to 0 if negative)
-            self._gpos[k] = max(self._gpos[k - 1] + log_pos, 0)
-            self._gneg[k] = max(self._gneg[k - 1] + log_neg, 0)
-
-            # Check for threshold crossing
-            if self._gpos[k] > self.threshold or self._gneg[k] > self.threshold:
-                if self._gpos[k] > self.threshold:
-                    jump = self._find_jump_location(self._cpos, k)
-                    self._process_jump(jump)
-
-                if self._gneg[k] > self.threshold:
-                    jump = self._find_jump_location(self._cneg, k)
-                    self._process_jump(jump)
-
-                # Reset after detection
-                self._anchor = k
-                self._reset_arrays()
-                self._stats.reset(data[k])
-
-        # Add final edge
-        self._edges.append(length)
-        return len(self._edges) - 1
-
-    def detect(
-        self,
-        data: npt.NDArray[np.floating],
-        max_states: int = -1,
-    ) -> CUSUMResultDict:
-        """
-        Detect change points in the data.
-
-        Parameters
-        ----------
-        data : npt.NDArray[np.floating]
-            Input time series data.
-        max_states : int, optional
-            Maximum allowed detected jumps before the final terminal edge is
-            added, matching the legacy CUSUMV3.detect_cusum behavior.
-            Use -1 for no limit, 0 for single state.
-
-        Returns
-        -------
-        CUSUMResultDict
-            Detection results with keys: nStates, starts, threshold, stepsize.
-        """
-        if max_states == 0:
-            return _create_single_state_result(len(data), self.threshold, self.stepsize)
-
-        # Adaptive detection with threshold relaxation
-        relaxation_factor = 1.1
-        current_threshold = self.threshold
-        current_stepsize = self.stepsize
-
-        while True:
-            self._reset()
-            self.threshold = current_threshold
-            self.stepsize = current_stepsize
-
-            n_states = self._detect_single_pass(data)
-            detected_jumps = n_states - 1
-
-            if max_states < 0 or detected_jumps <= max_states:
-                break
-
-            # Relax parameters if too many states detected
-            current_threshold *= relaxation_factor
-            current_stepsize *= relaxation_factor
-
-        edges = np.array(self._edges, dtype=np.int64)
-        assert n_states == len(edges) - 1
-
-        return {
-            "nStates": n_states,
-            "starts": edges,
-            "threshold": self.threshold,
-            "stepsize": self.stepsize,
-        }
+    edges.append(length)
+    return len(edges) - 1, edges
 
 
 def detect_cusumv2(
@@ -483,25 +303,31 @@ def detect_cusumv2(
         - threshold: Final threshold used
         - stepsize: Final stepsize used
     """
-    # Handle single-state case
     if maxstates == 0:
         return _create_single_state_result(len(data0), threshhold, stepsize)
 
-    # Preprocess data
     data = _preprocess_data(data0, moving_oneside_window)
-
     if data is None:
-        # Data too short for preprocessing
         return _create_single_state_result(len(data0), threshhold, stepsize)
 
     assert len(data) == len(data0)
 
-    # Run detection
-    detector = CUSUMDetector(
-        base_sd=basesd,
-        threshold=threshhold,
-        stepsize=stepsize,
-        min_length=minlength,
-    )
+    relaxation_factor = 1.1
+    current_threshold = float(threshhold)
+    current_stepsize = float(stepsize)
 
-    return detector.detect(data, max_states=maxstates)
+    while True:
+        n_states, edges = _cusum_single_pass(
+            data, basesd, current_threshold, current_stepsize, minlength
+        )
+        if maxstates < 0 or n_states - 1 <= maxstates:
+            break
+        current_threshold *= relaxation_factor
+        current_stepsize *= relaxation_factor
+
+    return {
+        "nStates": n_states,
+        "starts": np.array(edges, dtype=np.int64),
+        "threshold": current_threshold,
+        "stepsize": current_stepsize,
+    }

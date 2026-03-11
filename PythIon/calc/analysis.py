@@ -4,9 +4,25 @@ from typing import TypedDict
 import numpy as np
 import numpy.typing as npt
 import pandas as pd
-from scipy import signal, stats
+from scipy import signal
 
 from .cusumv3 import CUSUMResultDict, detect_cusumv2
+
+
+def _segment_statistics(
+    segment: npt.NDArray[np.float64],
+) -> tuple[float, float, float, float]:
+    """Compute (mean, stdev, skewness, kurtosis) without scipy.stats overhead."""
+    mean = float(np.mean(segment))
+    d = segment - mean
+    d2 = d * d
+    m2 = float(np.mean(d2))
+    if m2 == 0.0:
+        return mean, 0.0, 0.0, 0.0
+    m2_sqrt = m2**0.5
+    m3 = float(np.mean(d2 * d))
+    m4 = float(np.mean(d2 * d2))
+    return mean, m2_sqrt, m3 / (m2 * m2_sqrt), m4 / (m2 * m2) - 3.0
 
 
 @dataclass(kw_only=True, frozen=True)
@@ -274,18 +290,17 @@ def analyze_tables(
         zip(start_points, end_points)
     ):
         segment = data[start_point:end_point]
-        means[event_index] = np.mean(segment)
-        noise[event_index] = np.std(segment)
-        skew[event_index] = stats.skew(segment)
-        kurt[event_index] = stats.kurtosis(segment)
+        means[event_index], noise[event_index], skew[event_index], kurt[event_index] = (
+            _segment_statistics(segment)
+        )
 
         first_min_offset = first_min_offsets[event_index]
         if first_min_offset > 0:
             trough = data[start_point + first_min_offset : end_point]
             if trough.size != 0:
-                stdev_tt[event_index] = np.std(trough)
-                skew_tt[event_index] = stats.skew(trough)
-                kurt_tt[event_index] = stats.kurtosis(trough)
+                _, stdev_tt[event_index], skew_tt[event_index], kurt_tt[event_index] = (
+                    _segment_statistics(trough)
+                )
 
     events = pd.DataFrame(
         {
@@ -352,7 +367,9 @@ def analyze_tables(
             state_start = int(merged_cusum_res["starts"][state_index])
             state_end = int(merged_cusum_res["starts"][state_index + 1])
             state_data = trough[state_start:state_end]
-            state_mean = float(np.mean(state_data))
+            state_mean, state_stdev, state_skew, state_kurt = _segment_statistics(
+                state_data
+            )
             state_delli = float(aconf.baseline_a - state_mean)
             state_rows.append(
                 {
@@ -364,9 +381,9 @@ def analyze_tables(
                     "frac": float(state_delli / aconf.baseline_a),
                     "dwell": float(len(state_data) / iconf.adc_samplerate_hz * 1e6),
                     "mean": state_mean,
-                    "stdev": float(np.std(state_data)),
-                    "skewness": float(stats.skew(state_data)),
-                    "kurtosis": float(stats.kurtosis(state_data)),
+                    "stdev": state_stdev,
+                    "skewness": state_skew,
+                    "kurtosis": state_kurt,
                 }
             )
 
