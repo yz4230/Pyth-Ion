@@ -9,6 +9,7 @@ from . import Analysis
 from . import IO
 from . import Selections
 from . import Edits
+from .calc import compat as CalcCompat
 from PyQt5.QtCore import Qt, QEvent
 from PyQt5.QtGui import QKeyEvent
 
@@ -31,7 +32,7 @@ class ExtAppMainWindow(BaseAppMainWindow):
         )
 
         self.ui.actionAuto_Detect_Clears_Alt_A.triggered.connect(
-            lambda: Selections.autoFindCutLRs(self)
+            lambda: self._doAutoDetectClears()
         )
         self.ui.actionAdd_One_Cut_Region_Alt_D.triggered.connect(
             lambda: Selections.addOneManualCutLR(self)
@@ -95,6 +96,16 @@ class ExtAppMainWindow(BaseAppMainWindow):
         self.analysis_config = Analysis.Config()
         self.load_config = IO.LoadConfig()
 
+        self.use_refactored_engine = False
+        self._actionUseRefactoredEngine = QtWidgets.QAction(
+            "Use Refactored Engine", self
+        )
+        self._actionUseRefactoredEngine.setCheckable(True)
+        self._actionUseRefactoredEngine.setChecked(self.use_refactored_engine)
+        self._actionUseRefactoredEngine.toggled.connect(self._toggleRefactoredEngine)
+        self.ui.menuAnalysis.addSeparator()
+        self.ui.menuAnalysis.addAction(self._actionUseRefactoredEngine)
+
     def paintCurrentTrace(self):
         Painting.paintCurrentTrace(self)
 
@@ -120,7 +131,10 @@ class ExtAppMainWindow(BaseAppMainWindow):
 
     def doAnalysis(self):
         def analysisSequence(app: ExtAppMainWindow):
-            Analysis.computeAnalysis(app)
+            if app.use_refactored_engine:
+                CalcCompat.computeAnalysis(app)
+            else:
+                Analysis.computeAnalysis(app)
             Painting.plotAnalysis(app)
             if app.enable_save_analysis:
                 IO.saveAnalysis(app)
@@ -129,6 +143,17 @@ class ExtAppMainWindow(BaseAppMainWindow):
         dialog = Analysis.AnalyzeDialog(parent=self)
         dialog.accepted.connect(lambda: analysisSequence(self))
         dialog.exec()
+
+    def _toggleRefactoredEngine(self, checked: bool):
+        self.use_refactored_engine = checked
+        label = "refactored" if checked else "legacy"
+        self.printlog(f"Switched analysis engine to: {label}")
+
+    def _doAutoDetectClears(self):
+        if self.use_refactored_engine:
+            CalcCompat.autoFindCutLRs(self)
+        else:
+            Selections.autoFindCutLRs(self)
 
     def nextEvent(self):
         eventnumber = int(self.ui.eventnumberentry.text())
