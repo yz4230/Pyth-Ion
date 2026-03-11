@@ -215,13 +215,10 @@ def analyze_tables(
 
         end_points[event_index] = end_point
 
-    start_points = start_points[start_points != 0]
-    end_points = end_points[end_points != 0]
+    valid_mask = (start_points != 0) & (end_points != 0)
+    start_points = start_points[valid_mask]
+    end_points = end_points[valid_mask]
     number_of_events = start_points.size
-
-    if start_points.size > end_points.size:
-        start_points = start_points[: end_points.size]
-        number_of_events = start_points.size
 
     delis = np.zeros(number_of_events)
     dwells = np.zeros(number_of_events)

@@ -379,13 +379,10 @@ def computeAnalysis(app: BaseAppMainWindow):
                         IndexError
                 endpoints[j] = ep
 
-        startpoints = startpoints[startpoints != 0]  # delete those events marked for
-        endpoints = endpoints[endpoints != 0]  # deletion earlier
+        valid_mask = (startpoints != 0) & (endpoints != 0)
+        startpoints = startpoints[valid_mask]
+        endpoints = endpoints[valid_mask]
         seg_numberofevents = len(startpoints)
-
-        if len(startpoints) > len(endpoints):
-            startpoints = np.delete(startpoints, -1)
-            seg_numberofevents = len(startpoints)
 
         #### Now we want to move the endpoints to be the last minimum for each ####
         #### event so we find all minimas for each event, and set endpoint to last ####
