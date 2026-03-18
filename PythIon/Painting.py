@@ -47,15 +47,32 @@ def paintCurrentTrace(app: BaseAppMainWindow):
 
     app.p1.getAxis("bottom").setScale(1 / app.perfiledata.ADC_samplerate_Hz)
 
-    app.p1.addLine(y=app.ui_baseline * dscl, pen="g")
-    app.p1.addLine(
+    # Create draggable baseline line
+    from . import Edits
+    baseline_line = pg.InfiniteLine(
+        pos=app.ui_baseline * dscl,
+        angle=0,
+        pen=pg.mkPen("g", width=2),
+        movable=True,
+        hoverPen=pg.mkPen("lime", width=3),
+    )
+    baseline_line.sigPositionChangeFinished.connect(
+        lambda: Edits.handleBaselineDrag(app, baseline_line)
+    )
+    app.p1.addItem(baseline_line)
+    app.perfiledata.baselineHandle = baseline_line
+
+    # Baseline std deviation lines (static, dashed)
+    std_line_upper = app.p1.addLine(
         y=(app.ui_baseline + app.ui_baseline_std) * dscl,
         pen=pg.mkPen("g", style=QtCore.Qt.DashLine),
     )
-    app.p1.addLine(
+    std_line_lower = app.p1.addLine(
         y=(app.ui_baseline - app.ui_baseline_std) * dscl,
         pen=pg.mkPen("g", style=QtCore.Qt.DashLine),
     )
+    app.perfiledata.baselineStdHandles = [std_line_upper, std_line_lower]
+
     app.updateThresholdLine()
 
     # if app.perfiledata.isFullTrace:

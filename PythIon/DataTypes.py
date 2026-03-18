@@ -161,6 +161,8 @@ class FileData:
         self.usernote_record = None
         self.isFullTrace = False
         self.threshHandle = None
+        self.baselineHandle = None
+        self.baselineStdHandles: list = []
         self.matfilename = None
 
         self.ADC_samplerate_Hz = None

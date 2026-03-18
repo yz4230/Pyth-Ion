@@ -379,7 +379,7 @@ class AnalysisResults:
 | アクション | 関数 | 説明 |
 |-----------|------|------|
 | Cut | `Edits.doCut()` | 選択範囲をカット |
-| Set Baseline | `Edits.doBaseline()` | 選択範囲からベースライン設定 |
+| Set Baseline | `Edits.doBaseline()` | 選択範囲、または次のトレース左クリック位置からベースライン設定 |
 | Invert Current Sign | `Edits.invertData()` | 電流符号反転 |
 
 ### Selection メニュー

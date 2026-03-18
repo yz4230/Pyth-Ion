@@ -198,6 +198,7 @@ class BaseAppMainWindow(QtWidgets.QMainWindow):
         self.DSratio = 4096
         self.updateDSratioBox()
         self.enable_save_analysis = True
+        self.awaiting_baseline_click = False
 
     def updateDSratioBox(self):
         self.ui.dsValueEntry.setText(str(self.DSratio))

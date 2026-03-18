@@ -83,6 +83,7 @@ class ExtAppMainWindow(BaseAppMainWindow):
 
         self.ui.statusbar.showMessage(str(__version__))
         self.ui.dsUpdateButton.clicked.connect(self.updateDSratio)
+        self.p1.scene().sigMouseClicked.connect(self._handleSignalPlotClick)
 
         self.ui.checkBoxShowSubeventStates.clicked.connect(
             self.setSubeventStateVisibility
@@ -154,6 +155,9 @@ class ExtAppMainWindow(BaseAppMainWindow):
             CalcCompat.autoFindCutLRs(self)
         else:
             Selections.autoFindCutLRs(self)
+
+    def _handleSignalPlotClick(self, click_event):
+        Edits.handleSignalPlotClickForBaseline(self, click_event)
 
     def nextEvent(self):
         eventnumber = int(self.ui.eventnumberentry.text())
