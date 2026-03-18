@@ -42,7 +42,7 @@ class LoadFileDialog(QtWidgets.QDialog):
 
     def browseFile(self):
         file = QtWidgets.QFileDialog.getOpenFileName(
-            self, "Open file", "", "(*.opt;*.bin;*.tracedata)"
+            self, "Open file", "", "Data Files (*.opt *.bin *.tracedata)"
         )
         if file[0]:
             self.ui.plainTextEdit_DataFilePath.setPlainText(file[0])
