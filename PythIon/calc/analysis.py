@@ -87,6 +87,7 @@ EVENT_HEADERS = [
     "stdev_tt",
     "skewness_tt",
     "kurtosis_tt",
+    "fft_mean",
 ]
 
 STATE_HEADERS = [
@@ -282,6 +283,7 @@ def analyze_tables(
     stdev_tt = np.full(number_of_events, np.nan)
     skew_tt = np.full(number_of_events, np.nan)
     kurt_tt = np.full(number_of_events, np.nan)
+    fft_mean = np.full(number_of_events, np.nan)
 
     for event_index, (start_point, end_point) in enumerate(
         zip(start_points, end_points)
@@ -298,6 +300,13 @@ def analyze_tables(
                 _, stdev_tt[event_index], skew_tt[event_index], kurt_tt[event_index] = (
                     _segment_statistics(trough)
                 )
+
+        # FFT computation (DC component excluded, using rfft for real input)
+        if segment.size > 1:
+            fft_magnitude = np.abs(np.fft.rfft(segment))
+            # Exclude DC component (index 0), average remaining frequencies
+            if fft_magnitude.size > 1:
+                fft_mean[event_index] = np.mean(fft_magnitude[1:])
 
     events = pd.DataFrame(
         {
@@ -316,6 +325,7 @@ def analyze_tables(
             "stdev_tt": stdev_tt,
             "skewness_tt": skew_tt,
             "kurtosis_tt": kurt_tt,
+            "fft_mean": fft_mean,
         },
         columns=EVENT_HEADERS,
     )

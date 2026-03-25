@@ -69,6 +69,7 @@ def _populate_event_table(
     seg_result["stdev_tt"] = ev["stdev_tt"].to_numpy()
     seg_result["skewness_tt"] = ev["skewness_tt"].to_numpy()
     seg_result["kurtosis_tt"] = ev["kurtosis_tt"].to_numpy()
+    seg_result["fft_mean"] = ev["fft_mean"].to_numpy()
 
 
 def _populate_state_table(

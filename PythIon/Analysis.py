@@ -82,6 +82,7 @@ class AnalysisResults:
             ("stdev_tt", float, r"%.18e"),
             ("skewness_tt", float, r"%.18e"),
             ("kurtosis_tt", float, r"%.18e"),
+            ("fft_mean", float, r"%.18e"),
         ]
         self.result_dtype = np.dtype([(spec[0], spec[1]) for spec in self.result_spec])
         self.result_nullvalue = np.array(
@@ -459,6 +460,7 @@ def computeAnalysis(app: BaseAppMainWindow):
         seg_stdev_tt = np.full(seg_numberofevents, np.nan)
         seg_skew_tt = np.full(seg_numberofevents, np.nan)
         seg_kurt_tt = np.full(seg_numberofevents, np.nan)
+        seg_fft_mean = np.full(seg_numberofevents, np.nan)
 
         for kx, x in enumerate(startpoints):
             first_min_offset = seg_first_min_offset_list[kx]
@@ -469,6 +471,14 @@ def computeAnalysis(app: BaseAppMainWindow):
                 seg_stdev_tt[kx] = np.std(trough_trough_data)
                 seg_skew_tt[kx] = spstat.skew(trough_trough_data)
                 seg_kurt_tt[kx] = spstat.kurtosis(trough_trough_data)
+
+            # FFT computation for each event (DC component excluded, using rfft for real input)
+            event_signal = seg_filt[x : endpoints[kx]]
+            if len(event_signal) > 1:
+                fft_magnitude = np.abs(np.fft.rfft(event_signal))
+                # Exclude DC component (index 0), average remaining frequencies
+                if len(fft_magnitude) > 1:
+                    seg_fft_mean[kx] = np.mean(fft_magnitude[1:])
 
         if seg_numberofevents > 0:
             seg_result_table = np.full(
@@ -496,6 +506,7 @@ def computeAnalysis(app: BaseAppMainWindow):
             seg_result_table["stdev_tt"] = seg_stdev_tt
             seg_result_table["skewness_tt"] = seg_skew_tt
             seg_result_table["kurtosis_tt"] = seg_kurt_tt
+            seg_result_table["fft_mean"] = seg_fft_mean
             event_result_table = np.append(event_result_table, seg_result_table)
 
         if analysis_config.enable_subevent_state_detection:

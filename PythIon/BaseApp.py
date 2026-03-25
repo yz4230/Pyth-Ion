@@ -67,7 +67,7 @@ class BaseAppMainWindow(QtWidgets.QMainWindow):
         self.ui.dwellhistplot.setBackground("w")
         self.ui.dthistplot.setBackground("w")
         #        self.ui.PSDplot.setBackground('w')
-        for p in (self.ui.stdevplot, self.ui.skewnessplot, self.ui.kurtosisplot):
+        for p in (self.ui.stdevplot, self.ui.skewnessplot, self.ui.kurtosisplot, self.ui.fftplot):
             p.setBackground("w")
 
         def setAxisFont(ax: pg.AxisItem):
@@ -158,7 +158,23 @@ class BaseAppMainWindow(QtWidgets.QMainWindow):
         setAxisFont(self.w1kurt.getAxis("bottom"))
         setAxisFont(self.w1kurt.getAxis("left"))
 
-        self.p2s = (self.p2, self.p2std, self.p2skew, self.p2kurt)
+        self.w1fft = self.ui.fftplot.addPlot()
+        axis = LogExponentAxisItem(orientation="bottom")
+        self.w1fft.setAxisItems({"bottom": axis})
+        self.p2fft = dict()
+        for entry in self.scatter_entries:
+            p = pg.ScatterPlotItem()
+            self.w1fft.addItem(p)
+            self.p2fft[entry] = p
+        self.w1fft.setLabel("bottom", text="Log Dwell Time", units="Log10(μs)")
+        self.w1fft.setLabel("left", text="Mean FFT Magnitude", units="A")
+        self.w1fft.setLogMode(x=True, y=False)
+        self.w1fft.showGrid(x=True, y=True)
+        self.w1fft.getAxis("bottom").enableAutoSIPrefix(False)
+        setAxisFont(self.w1fft.getAxis("bottom"))
+        setAxisFont(self.w1fft.getAxis("left"))
+
+        self.p2s = (self.p2, self.p2std, self.p2skew, self.p2kurt, self.p2fft)
 
         self.w2 = self.ui.frachistplot.addPlot()
         self.w2.setLabel("bottom", text="Fractional Current Blockage")

@@ -192,6 +192,14 @@ def plotAnalysis(app: BaseAppMainWindow):
         pen=None,
         size=event_sizes,
     )
+    app.p2fft["events"].addPoints(
+        x=scatter_pts_x,
+        y=getValid(event_result_table["fft_mean"]),
+        symbol="o",
+        brush=event_colors,
+        pen=None,
+        size=event_sizes,
+    )
 
     if app.perfiledata.analysis_results.analysis_config.enable_subevent_state_detection:
         print("start plotting state scatterplots")
@@ -417,6 +425,7 @@ def inspectEvent_(app: BaseAppMainWindow, clickedentry=None, clicked=None):
     event_stdev = [event_result_table["stdev_tt"][event_row_number]]
     event_skew = [event_result_table["skewness_tt"][event_row_number]]
     event_kurt = [event_result_table["kurtosis_tt"][event_row_number]]
+    event_fft_mean = [event_result_table["fft_mean"][event_row_number]]
 
     app.p2["annotations"].addPoints(
         x=log_event_dwell,
@@ -493,6 +502,25 @@ def inspectEvent_(app: BaseAppMainWindow, clickedentry=None, clicked=None):
     )
     app.p2kurt["annotations"].addPoints(
         x=log_event_dwell, y=event_kurt, symbol="o", brush=event_color, size=6
+    )
+    app.p2fft["annotations"].addPoints(
+        x=log_event_dwell,
+        y=event_fft_mean,
+        symbol="o",
+        brush=None,
+        pen=pg.mkPen("y", width=2),
+        size=12,
+    )
+    app.p2fft["annotations"].addPoints(
+        x=log_event_dwell,
+        y=event_fft_mean,
+        symbol="o",
+        brush=None,
+        pen=pg.mkPen("k", width=2),
+        size=8,
+    )
+    app.p2fft["annotations"].addPoints(
+        x=log_event_dwell, y=event_fft_mean, symbol="o", brush=event_color, size=6
     )
 
     if app.perfiledata.analysis_results.analysis_config.enable_subevent_state_detection:

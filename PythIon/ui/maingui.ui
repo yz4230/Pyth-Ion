@@ -557,6 +557,16 @@ border-color: rgb(0, 0, 0);</string>
                  </item>
                 </layout>
                </widget>
+               <widget class="QWidget" name="ffttab">
+                <attribute name="title">
+                 <string>FFT</string>
+                </attribute>
+                <layout class="QHBoxLayout" name="horizontalLayout_fft">
+                 <item>
+                  <widget class="GraphicsLayoutWidget" name="fftplot"/>
+                 </item>
+                </layout>
+               </widget>
               </widget>
              </item>
             </layout>

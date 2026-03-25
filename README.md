@@ -8,8 +8,8 @@ Minimal documentation is provided becaues it's under active updates. Please dire
 
 ## Docs
 
-- See `docs/CODEBASE_OVERVIEW.md` for a codebase walkthrough (Japanese).
-- See `docs/CUSUM.md` for a CUSUM (subevent/state detection) overview.
+- See `docs/codebase_overview.md` for a codebase walkthrough (Japanese).
+- See `docs/cusum.md` for a CUSUM (subevent/state detection) overview.
 
 ## CSV export
 
