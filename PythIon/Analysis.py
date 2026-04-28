@@ -333,12 +333,18 @@ def computeAnalysis(app: BaseAppMainWindow):
 
         #### Eliminate events that start before file or end after file ####
 
+        if startpoints.size == 0:
+            continue
         if startpoints[0] == 0:
             startpoints = np.delete(startpoints, 0)
             endpoints = np.delete(endpoints, 0)
+        if endpoints.size == 0:
+            continue
         if endpoints[-1] == len(seg_filt) - 1:
             startpoints = np.delete(startpoints, -1)
             endpoints = np.delete(endpoints, -1)
+        if startpoints.size == 0 or endpoints.size == 0:
+            continue
 
         #### Track points back up to baseline to find true start and end ####
 
