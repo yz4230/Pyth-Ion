@@ -310,6 +310,10 @@ def inspectEvent_(app: BaseAppMainWindow, clickedentry=None, clicked=None):
 
     analysis_results = app.perfiledata.analysis_results
     event_result_table = analysis_results.tables["Event"]
+    if len(event_result_table) == 0:
+        app.perfiledata.selected_event_id = None
+        app.printlog("No event available for inspection")
+        return
 
     # Reset plot
     app.p3.setLabel("bottom", text="Time", units="s")
@@ -339,12 +343,16 @@ def inspectEvent_(app: BaseAppMainWindow, clickedentry=None, clicked=None):
 
     if event_row_number >= len(analysis_results.tables["Event"]):
         event_row_number = len(analysis_results.tables["Event"]) - 1
+    if event_row_number < 0:
+        event_row_number = 0
     app.ui.eventnumberentry.setText(str(event_row_number))
+
+    event_res = event_result_table[event_row_number]
+    app.perfiledata.selected_event_id = event_res["id"]
 
     event_color = app.perfiledata.event_colors[event_row_number]
 
     # plot event trace
-    event_res = event_result_table[event_row_number]
     k_seg = event_res["seg"]
     # print(k_seg)
     seg_range = app.perfiledata.data.srange[k_seg]
