@@ -67,8 +67,18 @@ class BaseAppMainWindow(QtWidgets.QMainWindow):
         self.ui.dwellhistplot.setBackground("w")
         self.ui.dthistplot.setBackground("w")
         #        self.ui.PSDplot.setBackground('w')
-        for p in (self.ui.stdevplot, self.ui.skewnessplot, self.ui.kurtosisplot, self.ui.fftplot):
+        for p in (
+            self.ui.stdevplot,
+            self.ui.skewnessplot,
+            self.ui.kurtosisplot,
+            self.ui.fftplot,
+            self.ui.fftspectrumplot,
+        ):
             p.setBackground("w")
+
+        fft_bin_width_validator = QtGui.QDoubleValidator(0.0, 1e9, 6, self)
+        fft_bin_width_validator.setNotation(QtGui.QDoubleValidator.StandardNotation)
+        self.ui.fftspectrumbinwidth.setValidator(fft_bin_width_validator)
 
         def setAxisFont(ax: pg.AxisItem):
             font = QtGui.QFont("Arial", 14, QtGui.QFont.Bold)
@@ -174,6 +184,13 @@ class BaseAppMainWindow(QtWidgets.QMainWindow):
         setAxisFont(self.w1fft.getAxis("bottom"))
         setAxisFont(self.w1fft.getAxis("left"))
 
+        self.w1fftspectrum = self.ui.fftspectrumplot.addPlot()
+        self.w1fftspectrum.setLabel("bottom", text="Frequency", units="kHz")
+        self.w1fftspectrum.setLabel("left", text="Mean FFT Magnitude", units="A")
+        self.w1fftspectrum.showGrid(x=True, y=True)
+        setAxisFont(self.w1fftspectrum.getAxis("bottom"))
+        setAxisFont(self.w1fftspectrum.getAxis("left"))
+
         self.p2s = (self.p2, self.p2std, self.p2skew, self.p2kurt, self.p2fft)
 
         self.w2 = self.ui.frachistplot.addPlot()
@@ -254,6 +271,7 @@ class BaseAppMainWindow(QtWidgets.QMainWindow):
 
     def clearPerFileDisplays(self):
         self.p3.clear()
+        self.w1fftspectrum.clear()
         self.p3.setLabel("bottom", text="Current", units="A", unitprefix="n")
         self.p3.setLabel("left", text="", units="Counts")
         self.p3.setAspectLocked(False)

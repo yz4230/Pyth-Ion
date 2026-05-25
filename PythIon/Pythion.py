@@ -77,6 +77,9 @@ class ExtAppMainWindow(BaseAppMainWindow):
         self.ui.gobutton.clicked.connect(lambda: Painting.inspectEvent(self))
         self.ui.previousbutton.clicked.connect(self.prevEvent)
         self.ui.nextbutton.clicked.connect(self.nextEvent)
+        self.ui.fftspectrumbinwidth.editingFinished.connect(
+            lambda: Painting.refreshEventFftSpectrum(self)
+        )
 
         self.ui.checkBox_showRaw.clicked.connect(self.updateRawFiltVisibility)
         self.ui.checkBox_showFilt.clicked.connect(self.updateRawFiltVisibility)

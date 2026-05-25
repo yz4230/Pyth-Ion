@@ -4,6 +4,127 @@ from .BaseApp import *
 # import cProfile
 
 
+FFT_SPECTRUM_BIN_WIDTH_HZ = 20_000
+
+
+def _getFftSpectrumBinWidthHz(app: BaseAppMainWindow):
+    try:
+        bin_width_khz = float(app.ui.fftspectrumbinwidth.text())
+    except ValueError:
+        bin_width_khz = np.nan
+
+    if not np.isfinite(bin_width_khz) or bin_width_khz <= 0:
+        default_bin_width_khz = FFT_SPECTRUM_BIN_WIDTH_HZ / 1e3
+        app.ui.fftspectrumbinwidth.setText(f"{default_bin_width_khz:g}")
+        app.printlog("Invalid FFT spectrum bin width; reset to 20 kHz")
+        return FFT_SPECTRUM_BIN_WIDTH_HZ
+
+    return bin_width_khz * 1e3
+
+
+def _computeFftSpectrumBins(
+    event_signal, samplerate_hz, bin_width_hz=FFT_SPECTRUM_BIN_WIDTH_HZ
+):
+    event_signal = np.asarray(event_signal)
+    if (
+        event_signal.size <= 1
+        or samplerate_hz is None
+        or not np.isfinite(samplerate_hz)
+        or samplerate_hz <= 0
+        or bin_width_hz <= 0
+    ):
+        return np.array([]), np.array([]), np.array([])
+
+    fft_frequency_hz = np.fft.rfftfreq(event_signal.size, d=1 / samplerate_hz)
+    fft_magnitude = np.abs(np.fft.rfft(event_signal))
+
+    fft_frequency_hz = fft_frequency_hz[1:]
+    fft_magnitude = fft_magnitude[1:]
+    valid = np.isfinite(fft_frequency_hz) & np.isfinite(fft_magnitude)
+    fft_frequency_hz = fft_frequency_hz[valid]
+    fft_magnitude = fft_magnitude[valid]
+    if fft_frequency_hz.size == 0:
+        return np.array([]), np.array([]), np.array([])
+
+    max_frequency_hz = fft_frequency_hz[-1]
+    bin_edges_hz = np.arange(0, max_frequency_hz + bin_width_hz, bin_width_hz)
+    bin_starts_hz = bin_edges_hz[:-1]
+    bin_ends_hz = np.minimum(bin_starts_hz + bin_width_hz, max_frequency_hz)
+    bin_means = np.full(bin_starts_hz.size, np.nan)
+
+    for index, (bin_start_hz, bin_end_hz) in enumerate(
+        zip(bin_starts_hz, bin_ends_hz)
+    ):
+        if index == bin_starts_hz.size - 1:
+            in_bin = (fft_frequency_hz >= bin_start_hz) & (
+                fft_frequency_hz <= bin_end_hz
+            )
+        else:
+            in_bin = (fft_frequency_hz >= bin_start_hz) & (
+                fft_frequency_hz < bin_end_hz
+            )
+        if np.any(in_bin):
+            bin_means[index] = np.mean(fft_magnitude[in_bin])
+
+    has_data = np.isfinite(bin_means)
+    return (
+        bin_starts_hz[has_data] / 1e3,
+        bin_ends_hz[has_data] / 1e3,
+        bin_means[has_data],
+    )
+
+
+def _plotEventFftSpectrum(app: BaseAppMainWindow, event_signal, event_color):
+    app.w1fftspectrum.clear()
+    bin_width_hz = _getFftSpectrumBinWidthHz(app)
+    bin_starts_khz, bin_ends_khz, bin_means = _computeFftSpectrumBins(
+        event_signal, app.perfiledata.ADC_samplerate_Hz, bin_width_hz
+    )
+    if bin_means.size == 0:
+        app.printlog("No FFT spectrum available for selected event")
+        return
+
+    spectrum_bars = pg.BarGraphItem(
+        x0=bin_starts_khz,
+        x1=bin_ends_khz,
+        height=bin_means,
+        brush=event_color,
+        pen=pg.mkPen("k", width=1),
+    )
+    app.w1fftspectrum.addItem(spectrum_bars)
+    app.w1fftspectrum.setRange(xRange=[0, max(bin_ends_khz[-1], 20)])
+
+
+def refreshEventFftSpectrum(app: BaseAppMainWindow):
+    analysis_results = getattr(app.perfiledata, "analysis_results", None)
+    if analysis_results is None or "Event" not in analysis_results.tables:
+        app.w1fftspectrum.clear()
+        return
+
+    event_result_table = analysis_results.tables["Event"]
+    if len(event_result_table) == 0:
+        app.w1fftspectrum.clear()
+        return
+
+    try:
+        event_row_number = int(app.ui.eventnumberentry.text())
+    except ValueError:
+        event_row_number = 0
+    event_row_number = min(max(event_row_number, 0), len(event_result_table) - 1)
+    app.ui.eventnumberentry.setText(str(event_row_number))
+
+    event_res = event_result_table[event_row_number]
+    event_seg_filt = app.perfiledata.data.filt[event_res["seg"]]
+    event_signal = event_seg_filt[
+        event_res["local_startpt"] : event_res["local_endpt"]
+    ]
+    if app.perfiledata.event_colors is not None:
+        event_color = app.perfiledata.event_colors[event_row_number]
+    else:
+        event_color = app.inspect_event_fit_color_singlestate
+    _plotEventFftSpectrum(app, event_signal, event_color)
+
+
 def paintCurrentTrace(app: BaseAppMainWindow):
     print("Painting Current Trace")
     app.p1.clear()
@@ -114,6 +235,7 @@ def plotAnalysis(app: BaseAppMainWindow):
     app.w3.clear()
     app.w4.clear()
     app.w5.clear()
+    app.w1fftspectrum.clear()
     paintCurrentTrace(app)
 
     event_result_table = app.perfiledata.analysis_results.tables["Event"]
@@ -311,6 +433,7 @@ def inspectEvent_(app: BaseAppMainWindow, clickedentry=None, clicked=None):
     analysis_results = app.perfiledata.analysis_results
     event_result_table = analysis_results.tables["Event"]
     if len(event_result_table) == 0:
+        app.w1fftspectrum.clear()
         app.perfiledata.selected_event_id = None
         app.printlog("No event available for inspection")
         return
@@ -363,6 +486,10 @@ def inspectEvent_(app: BaseAppMainWindow, clickedentry=None, clicked=None):
     flank_local_end = event_res["local_endpt"] + eventbuffer
     flank_local_end = min(len(event_seg_filt), flank_local_end)
     flank_global_end = flank_local_end + seg_range[0]
+    event_signal = event_seg_filt[
+        event_res["local_startpt"] : event_res["local_endpt"]
+    ]
+    _plotEventFftSpectrum(app, event_signal, event_color)
 
     app.p3.plot(
         app.perfiledata.getT(range(flank_global_start, flank_global_end)),

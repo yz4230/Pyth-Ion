@@ -567,6 +567,63 @@ border-color: rgb(0, 0, 0);</string>
                  </item>
                 </layout>
                </widget>
+               <widget class="QWidget" name="fftspectrumtab">
+                <attribute name="title">
+                 <string>FFT Spectrum</string>
+                </attribute>
+                <layout class="QGridLayout" name="gridLayout_fftspectrum">
+                 <item row="0" column="0">
+                  <widget class="GraphicsLayoutWidget" name="fftspectrumplot"/>
+                 </item>
+                 <item row="1" column="0">
+                  <layout class="QHBoxLayout" name="horizontalLayout_fftspectrum">
+                   <item>
+                    <widget class="QLabel" name="label_fftspectrumbinwidth">
+                     <property name="text">
+                      <string>Bin width (kHz):</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLineEdit" name="fftspectrumbinwidth">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="text">
+                      <string>20</string>
+                     </property>
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="label_fftspectrumhelp">
+                     <property name="text">
+                      <string>Press Enter to update spectrum</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <spacer name="horizontalSpacer_fftspectrum">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>40</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                  </layout>
+                 </item>
+                </layout>
+               </widget>
               </widget>
              </item>
             </layout>
