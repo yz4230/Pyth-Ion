@@ -87,6 +87,46 @@ def doBaseline(app: BaseAppMainWindow):
         )
 
 
+def doFftSpectrumReferenceRegion(app: BaseAppMainWindow):
+    with app.awaitresponse:
+        trace_data = app.perfiledata.data
+        original_length = trace_data.original_length
+        if original_length is None or original_length <= 0:
+            app.printlog(
+                "No trace loaded. Load data before setting an FFT reference region."
+            )
+            return
+
+        if len(app.perfiledata.LRs) == 0:
+            app.printlog(
+                "No selection found. Select a current trace region before setting the FFT reference region."
+            )
+            return
+
+        reference_lr = app.perfiledata.LRs[-1]
+        reference_region = np.sort(np.round(reference_lr.getRegion()).astype(int))
+        reference_region = np.clip(reference_region, 0, original_length)
+        start_ndx = int(reference_region[0])
+        end_ndx = int(reference_region[1])
+        reference_signal = trace_data.getConcatDataPoints((start_ndx, end_ndx))
+        if reference_signal.size <= 1:
+            app.printlog(
+                "Selected FFT reference region contains too little data. Adjust the region and try again."
+            )
+            return
+
+        app.perfiledata.fft_spectrum_reference_region = np.array(
+            [start_ndx, end_ndx], dtype=int
+        )
+        app.clearSelections()
+        app.paintCurrentTrace()
+        app.printlog(f"FFT spectrum reference region set to {[start_ndx, end_ndx]}")
+
+        from . import Painting
+
+        Painting.refreshEventFftSpectrum(app)
+
+
 def _estimateBaselineStdNearClick(
     app: BaseAppMainWindow, center_ndx: int, trace_length: int
 ) -> float:

@@ -5,6 +5,13 @@ from .BaseApp import *
 
 
 FFT_SPECTRUM_BIN_WIDTH_HZ = 20_000
+FFT_SPECTRUM_REFERENCE_COLOR = (30, 130, 200, 100)
+FFT_SPECTRUM_LEGEND_COLORS = {
+    "red": (220, 40, 40),
+    "green": (90, 110, 85),
+    "blue": (30, 130, 200),
+    "purple": (173, 27, 183),
+}
 
 
 def _getFftSpectrumBinWidthHz(app: BaseAppMainWindow):
@@ -74,15 +81,136 @@ def _computeFftSpectrumBins(
     )
 
 
+def _computeFftSpectrumDifferenceBins(
+    event_signal,
+    reference_signal,
+    samplerate_hz,
+    bin_width_hz=FFT_SPECTRUM_BIN_WIDTH_HZ,
+):
+    event_starts, event_ends, event_means = _computeFftSpectrumBins(
+        event_signal, samplerate_hz, bin_width_hz
+    )
+    reference_starts, reference_ends, reference_means = _computeFftSpectrumBins(
+        reference_signal, samplerate_hz, bin_width_hz
+    )
+    if event_means.size == 0 or reference_means.size == 0:
+        return np.array([]), np.array([]), np.array([])
+
+    reference_bins = {
+        (round(float(start), 9), round(float(end), 9)): mean
+        for start, end, mean in zip(reference_starts, reference_ends, reference_means)
+    }
+    shared_starts = []
+    shared_ends = []
+    diff_means = []
+    for start, end, event_mean in zip(event_starts, event_ends, event_means):
+        key = (round(float(start), 9), round(float(end), 9))
+        reference_mean = reference_bins.get(key)
+        if reference_mean is None:
+            continue
+        shared_starts.append(start)
+        shared_ends.append(end)
+        diff_means.append(event_mean - reference_mean)
+
+    return np.array(shared_starts), np.array(shared_ends), np.array(diff_means)
+
+
+def _getFftSpectrumReferenceSignal(app: BaseAppMainWindow):
+    reference_region = getattr(app.perfiledata, "fft_spectrum_reference_region", None)
+    if reference_region is None:
+        return np.array([])
+    reference_region = np.asarray(reference_region, dtype=int)
+    if reference_region.size != 2 or reference_region[1] <= reference_region[0]:
+        return np.array([])
+    return app.perfiledata.data.getConcatDataPoints(reference_region, rawdata=False)
+
+
+def _getFftSpectrumLegendColorName(color):
+    rgb = np.array(pg.mkColor(color).getRgb()[:3])
+    return min(
+        FFT_SPECTRUM_LEGEND_COLORS,
+        key=lambda name: np.sum(
+            (rgb - np.array(FFT_SPECTRUM_LEGEND_COLORS[name])) ** 2
+        ),
+    )
+
+
+def _addFftSpectrumLegendItem(app: BaseAppMainWindow, label, color):
+    legend_color = pg.mkColor(color)
+    legend_color.setAlpha(255)
+    color_name = _getFftSpectrumLegendColorName(color)
+    app.w1fftspectrumlegend.addItem(
+        pg.PlotDataItem(
+            pen=pg.mkPen(legend_color, width=3),
+            symbol="s",
+            symbolSize=10,
+            symbolBrush=pg.mkBrush(legend_color),
+            symbolPen=pg.mkPen(legend_color, width=2),
+        ),
+        f"{label} ({color_name})",
+    )
+
+
 def _plotEventFftSpectrum(app: BaseAppMainWindow, event_signal, event_color):
     app.w1fftspectrum.clear()
+    app.w1fftspectrumlegend.clear()
     bin_width_hz = _getFftSpectrumBinWidthHz(app)
-    bin_starts_khz, bin_ends_khz, bin_means = _computeFftSpectrumBins(
-        event_signal, app.perfiledata.ADC_samplerate_Hz, bin_width_hz
+    reference_signal = _getFftSpectrumReferenceSignal(app)
+    show_difference = (
+        hasattr(app.ui, "checkBoxFftSpectrumDifference")
+        and app.ui.checkBoxFftSpectrumDifference.isChecked()
     )
+    if show_difference:
+        if reference_signal.size <= 1:
+            app.ui.checkBoxFftSpectrumDifference.setChecked(False)
+            app.printlog(
+                "No FFT spectrum reference region available; showing event spectrum."
+            )
+            show_difference = False
+
+    if show_difference:
+        bin_starts_khz, bin_ends_khz, bin_means = _computeFftSpectrumDifferenceBins(
+            event_signal,
+            reference_signal,
+            app.perfiledata.ADC_samplerate_Hz,
+            bin_width_hz,
+        )
+        app.w1fftspectrum.setLabel(
+            "left", text="FFT Magnitude Difference", units="A"
+        )
+        reference_starts_khz = np.array([])
+        reference_ends_khz = np.array([])
+        reference_means = np.array([])
+    else:
+        bin_starts_khz, bin_ends_khz, bin_means = _computeFftSpectrumBins(
+            event_signal, app.perfiledata.ADC_samplerate_Hz, bin_width_hz
+        )
+        reference_starts_khz, reference_ends_khz, reference_means = (
+            _computeFftSpectrumBins(
+                reference_signal, app.perfiledata.ADC_samplerate_Hz, bin_width_hz
+            )
+        )
+        app.w1fftspectrum.setLabel("left", text="Mean FFT Magnitude", units="A")
+
     if bin_means.size == 0:
-        app.printlog("No FFT spectrum available for selected event")
+        if show_difference:
+            app.printlog("No shared FFT spectrum bins available for difference display")
+        else:
+            app.printlog("No FFT spectrum available for selected event")
         return
+
+    if reference_means.size > 0:
+        reference_bars = pg.BarGraphItem(
+            x0=reference_starts_khz,
+            x1=reference_ends_khz,
+            height=reference_means,
+            brush=pg.mkBrush(FFT_SPECTRUM_REFERENCE_COLOR),
+            pen=pg.mkPen(FFT_SPECTRUM_REFERENCE_COLOR[:3], width=2),
+        )
+        app.w1fftspectrum.addItem(reference_bars)
+        _addFftSpectrumLegendItem(
+            app, "Reference region", FFT_SPECTRUM_REFERENCE_COLOR
+        )
 
     spectrum_bars = pg.BarGraphItem(
         x0=bin_starts_khz,
@@ -91,19 +219,28 @@ def _plotEventFftSpectrum(app: BaseAppMainWindow, event_signal, event_color):
         brush=event_color,
         pen=pg.mkPen("k", width=1),
     )
+    spectrum_name = "Event - Reference" if show_difference else "Event"
     app.w1fftspectrum.addItem(spectrum_bars)
-    app.w1fftspectrum.setRange(xRange=[0, max(bin_ends_khz[-1], 20)])
+    _addFftSpectrumLegendItem(app, spectrum_name, event_color)
+    if show_difference:
+        app.w1fftspectrum.addLine(y=0, pen=pg.mkPen("k", width=1))
+    max_frequency_khz = bin_ends_khz[-1]
+    if reference_ends_khz.size > 0:
+        max_frequency_khz = max(max_frequency_khz, reference_ends_khz[-1])
+    app.w1fftspectrum.setRange(xRange=[0, max(max_frequency_khz, 20)])
 
 
 def refreshEventFftSpectrum(app: BaseAppMainWindow):
     analysis_results = getattr(app.perfiledata, "analysis_results", None)
     if analysis_results is None or "Event" not in analysis_results.tables:
         app.w1fftspectrum.clear()
+        app.w1fftspectrumlegend.clear()
         return
 
     event_result_table = analysis_results.tables["Event"]
     if len(event_result_table) == 0:
         app.w1fftspectrum.clear()
+        app.w1fftspectrumlegend.clear()
         return
 
     try:
@@ -236,6 +373,7 @@ def plotAnalysis(app: BaseAppMainWindow):
     app.w4.clear()
     app.w5.clear()
     app.w1fftspectrum.clear()
+    app.w1fftspectrumlegend.clear()
     paintCurrentTrace(app)
 
     event_result_table = app.perfiledata.analysis_results.tables["Event"]
@@ -434,6 +572,7 @@ def inspectEvent_(app: BaseAppMainWindow, clickedentry=None, clicked=None):
     event_result_table = analysis_results.tables["Event"]
     if len(event_result_table) == 0:
         app.w1fftspectrum.clear()
+        app.w1fftspectrumlegend.clear()
         app.perfiledata.selected_event_id = None
         app.printlog("No event available for inspection")
         return

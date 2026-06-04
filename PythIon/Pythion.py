@@ -27,6 +27,9 @@ class ExtAppMainWindow(BaseAppMainWindow):
 
         self.ui.actionCut.triggered.connect(lambda: Edits.doCut(self))
         self.ui.actionSet_Baseline.triggered.connect(lambda: Edits.doBaseline(self))
+        self.ui.actionSet_Reference_Region.triggered.connect(
+            lambda: Edits.doFftSpectrumReferenceRegion(self)
+        )
         self.ui.actionInvert_Current_Sign.triggered.connect(
             lambda: Edits.invertData(self)
         )
@@ -78,6 +81,9 @@ class ExtAppMainWindow(BaseAppMainWindow):
         self.ui.previousbutton.clicked.connect(self.prevEvent)
         self.ui.nextbutton.clicked.connect(self.nextEvent)
         self.ui.fftspectrumbinwidth.editingFinished.connect(
+            lambda: Painting.refreshEventFftSpectrum(self)
+        )
+        self.ui.checkBoxFftSpectrumDifference.clicked.connect(
             lambda: Painting.refreshEventFftSpectrum(self)
         )
 

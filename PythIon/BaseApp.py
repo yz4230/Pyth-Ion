@@ -185,6 +185,7 @@ class BaseAppMainWindow(QtWidgets.QMainWindow):
         setAxisFont(self.w1fft.getAxis("left"))
 
         self.w1fftspectrum = self.ui.fftspectrumplot.addPlot()
+        self.w1fftspectrumlegend = self.w1fftspectrum.addLegend(offset=(-10, 10))
         self.w1fftspectrum.setLabel("bottom", text="Frequency", units="kHz")
         self.w1fftspectrum.setLabel("left", text="Mean FFT Magnitude", units="A")
         self.w1fftspectrum.showGrid(x=True, y=True)
@@ -272,6 +273,7 @@ class BaseAppMainWindow(QtWidgets.QMainWindow):
     def clearPerFileDisplays(self):
         self.p3.clear()
         self.w1fftspectrum.clear()
+        self.w1fftspectrumlegend.clear()
         self.p3.setLabel("bottom", text="Current", units="A", unitprefix="n")
         self.p3.setLabel("left", text="", units="Counts")
         self.p3.setAspectLocked(False)

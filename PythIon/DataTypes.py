@@ -148,6 +148,7 @@ class FileData:
         self.lastClicked = []
         self.hasbaselinebeenset = 0
         self.selected_event_id: int | None = None
+        self.fft_spectrum_reference_region: np.ndarray | None = None
 
         self.event_sizes = None
         self.event_colors = None
