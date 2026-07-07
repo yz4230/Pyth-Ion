@@ -18,10 +18,17 @@ jobs:
             os: windows-latest
             artifact_name: PythIon-windows-amd64
             artifact_path: build/_pyinstaller_dist/PythIon
+            executable_path: build/_pyinstaller_dist/PythIon/PythIon.exe
+          - name: windows/arm64
+            os: windows-11-arm
+            artifact_name: PythIon-windows-arm64
+            artifact_path: build/_pyinstaller_dist/PythIon
+            executable_path: build/_pyinstaller_dist/PythIon/PythIon.exe
           - name: darwin/arm64
             os: macos-14
             artifact_name: PythIon-darwin-arm64
             artifact_path: build/_pyinstaller_dist/PythIon
+            executable_path: build/_pyinstaller_dist/PythIon/PythIon
 
     steps:
       - name: Checkout
@@ -44,6 +51,10 @@ jobs:
         env:
           QT_DEBUG_PLUGINS: "0"
         run: uv run scripts/pyinstaller_build.py --out build --name PythIon
+
+      - name: Verify executable
+        shell: bash
+        run: test -f "${{ matrix.executable_path }}"
 
       - name: Minimize uv cache
         run: uv cache prune --ci
