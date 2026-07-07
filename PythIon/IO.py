@@ -4,6 +4,7 @@ import pickle
 import os
 import yaml
 import csv
+import json
 
 import numpy as np
 from scipy import signal
@@ -367,6 +368,413 @@ def exportEventPointsCSV(app: BaseAppMainWindow):
             writer.writerow(row)
 
     app.printlog(f"Exported {len(event_table):d} events to CSV: {save_path:s}")
+
+
+def _json_number(value):
+    try:
+        if value is None:
+            return None
+        value = float(value)
+        if not np.isfinite(value):
+            return None
+        return value
+    except Exception:
+        return None
+
+
+def _json_int(value):
+    try:
+        return int(value)
+    except Exception:
+        return None
+
+
+def _write_json(path: str, payload):
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(payload, f, indent=2, ensure_ascii=False)
+        f.write("\n")
+
+
+def _csv_float(value):
+    try:
+        if value is None or not np.isfinite(value):
+            return ""
+        return f"{float(value):.18e}"
+    except Exception:
+        return ""
+
+
+def _write_trace_csv(
+    app: BaseAppMainWindow,
+    path: str,
+    *,
+    global_start: int,
+    global_end: int,
+    samplerate_hz: float,
+    event_global_start: int,
+    subevent_global_start: int | None = None,
+):
+    raw_data = app.perfiledata.data.getConcatDataPoints(
+        (global_start, global_end), rawdata=True, gap_filler=np.nan
+    )
+    filt_data = app.perfiledata.data.getConcatDataPoints(
+        (global_start, global_end), rawdata=False, gap_filler=np.nan
+    )
+    sample_indexes = np.arange(global_start, global_end, dtype=np.int64)
+
+    with open(path, "w", encoding="utf-8", newline="") as f:
+        writer = csv.writer(f)
+        if subevent_global_start is None:
+            writer.writerow(["sample_index", "t_abs_s", "t_event_s", "raw_A", "filt_A"])
+            for sample_index, raw, filt in zip(sample_indexes, raw_data, filt_data):
+                writer.writerow(
+                    [
+                        int(sample_index),
+                        _csv_float(sample_index / samplerate_hz),
+                        _csv_float((sample_index - event_global_start) / samplerate_hz),
+                        _csv_float(raw),
+                        _csv_float(filt),
+                    ]
+                )
+        else:
+            writer.writerow(
+                [
+                    "sample_index",
+                    "t_abs_s",
+                    "t_parent_event_s",
+                    "t_subevent_s",
+                    "raw_A",
+                    "filt_A",
+                ]
+            )
+            for sample_index, raw, filt in zip(sample_indexes, raw_data, filt_data):
+                writer.writerow(
+                    [
+                        int(sample_index),
+                        _csv_float(sample_index / samplerate_hz),
+                        _csv_float((sample_index - event_global_start) / samplerate_hz),
+                        _csv_float(
+                            (sample_index - subevent_global_start) / samplerate_hz
+                        ),
+                        _csv_float(raw),
+                        _csv_float(filt),
+                    ]
+                )
+
+    return filt_data
+
+
+def _write_fft_csv(path: str, event_signal, samplerate_hz: float):
+    event_signal = np.asarray(event_signal)
+    with open(path, "w", encoding="utf-8", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(
+            ["frequency_Hz", "real_A", "imag_A", "magnitude_A", "phase_rad"]
+        )
+        if event_signal.size == 0:
+            return
+        fft_values = np.fft.rfft(event_signal)
+        frequencies = np.fft.rfftfreq(event_signal.size, d=1 / samplerate_hz)
+        for frequency, fft_value in zip(frequencies, fft_values):
+            writer.writerow(
+                [
+                    _csv_float(frequency),
+                    _csv_float(np.real(fft_value)),
+                    _csv_float(np.imag(fft_value)),
+                    _csv_float(np.abs(fft_value)),
+                    _csv_float(np.angle(fft_value)),
+                ]
+            )
+
+
+def _export_dir_name(row_number: int) -> str:
+    return f"{row_number + 1:05d}"
+
+
+def _get_state_rows_for_event(state_table, event_id: int):
+    if state_table is None or len(state_table) == 0:
+        return []
+    try:
+        return list(state_table[state_table["parent_id"] == event_id])
+    except Exception:
+        return []
+
+
+class _EventExportProgressDialog(QtWidgets.QDialog):
+    def __init__(self, parent, event_count: int):
+        super().__init__(parent)
+        self._canceled = False
+        self.setWindowTitle("Export Event Package")
+        self.setWindowModality(QtCore.Qt.WindowModal)
+        self.setMinimumWidth(420)
+
+        layout = QtWidgets.QVBoxLayout(self)
+        self.label = QtWidgets.QLabel("Exporting event package...", self)
+        layout.addWidget(self.label)
+
+        self.progress_bar = QtWidgets.QProgressBar(self)
+        self.progress_bar.setRange(0, event_count)
+        self.progress_bar.setValue(0)
+        self.progress_bar.setTextVisible(True)
+        layout.addWidget(self.progress_bar)
+
+        button_layout = QtWidgets.QHBoxLayout()
+        button_layout.addStretch(1)
+        self.cancel_button = QtWidgets.QPushButton("Cancel", self)
+        self.cancel_button.clicked.connect(self.cancel)
+        button_layout.addWidget(self.cancel_button)
+        layout.addLayout(button_layout)
+
+    def cancel(self):
+        self._canceled = True
+        self.cancel_button.setEnabled(False)
+        self.label.setText("Canceling after current event...")
+
+    def set_progress(
+        self,
+        completed_count: int,
+        event_count: int,
+        current_event_number: int | None = None,
+    ):
+        if current_event_number is not None:
+            self.label.setText(
+                f"Exporting event {current_event_number:d} of {event_count:d}..."
+            )
+        self.progress_bar.setMaximum(event_count)
+        self.progress_bar.setValue(completed_count)
+
+    def wasCanceled(self):
+        return self._canceled
+
+
+def _make_export_progress_dialog(app: BaseAppMainWindow, event_count: int):
+    if QtWidgets.QApplication.instance() is None:
+        return None
+    progress = _EventExportProgressDialog(app, event_count)
+    progress.show()
+    progress.raise_()
+    progress.activateWindow()
+    QtWidgets.QApplication.instance().processEvents()
+    return progress
+
+
+def _update_export_progress(
+    progress,
+    completed_count: int,
+    event_count: int,
+    current_event_number: int | None = None,
+):
+    if progress is None:
+        return False
+    if current_event_number is not None:
+        progress.set_progress(
+            completed_count,
+            event_count,
+            current_event_number=current_event_number,
+        )
+    else:
+        progress.set_progress(completed_count, event_count)
+    app = QtWidgets.QApplication.instance()
+    if app is not None:
+        app.processEvents()
+    return progress.wasCanceled()
+
+
+def exportEventPackage(app: BaseAppMainWindow, export_dir_path: str | None = None):
+    """Export events as a directory tree for external analysis apps."""
+
+    analysis_results = getattr(app.perfiledata, "analysis_results", None)
+    if analysis_results is None:
+        app.printlog("No analysis results. Run Analyze first.")
+        return
+
+    event_table = analysis_results.tables.get("Event")
+    if event_table is None or len(event_table) == 0:
+        app.printlog('No "Event" table to export. Run Analyze first.')
+        return
+
+    samplerate = app.perfiledata.ADC_samplerate_Hz
+    if samplerate is None or not np.isfinite(samplerate) or samplerate <= 0:
+        app.printlog("Invalid samplerate; cannot export event package.")
+        return
+
+    if export_dir_path is None:
+        timestamp = app.getSaveTimeStamp()
+        default_path = app.perfiledata.matfilename + f"_{timestamp}_pythion_export"
+        export_dir_path, _ = QtWidgets.QFileDialog.getSaveFileName(
+            app,
+            "Export Event Package",
+            default_path,
+            "Pyth-Ion Export Directory (*)",
+        )
+        if not export_dir_path:
+            return
+
+    if os.path.exists(export_dir_path):
+        if not os.path.isdir(export_dir_path):
+            app.printlog(
+                f"Export path exists and is not a directory: {export_dir_path:s}"
+            )
+            return
+        if os.listdir(export_dir_path):
+            app.printlog(f"Export directory is not empty: {export_dir_path:s}")
+            return
+    else:
+        os.makedirs(export_dir_path)
+
+    events_dir = os.path.join(export_dir_path, "events")
+    os.makedirs(events_dir, exist_ok=True)
+
+    analysis_config = analysis_results.analysis_config
+    metadata = {
+        "source_file_name": getattr(app.perfiledata.data, "source_file_name", "") or "",
+        "ADC_samplerate_Hz": _json_number(app.perfiledata.ADC_samplerate_Hz),
+        "LPFilter_cutoff_Hz": _json_number(app.perfiledata.LPFilter_cutoff_Hz),
+        "baseline_A": _json_number(analysis_config.baseline_A),
+        "baseline_std_A": _json_number(analysis_config.baseline_std_A),
+        "threshold_A": _json_number(analysis_config.threshold_A),
+    }
+    _write_json(os.path.join(export_dir_path, "metadata.json"), metadata)
+
+    segments = []
+    for seg_index, seg_range in enumerate(app.perfiledata.data.srange):
+        segments.append(
+            {
+                "seg": int(seg_index),
+                "start": _json_int(seg_range[0]),
+                "end": _json_int(seg_range[1]),
+            }
+        )
+    _write_json(os.path.join(export_dir_path, "segments.json"), segments)
+
+    state_table = analysis_results.tables.get("CUSUMState")
+    events_index = []
+    event_count = len(event_table)
+    progress = _make_export_progress_dialog(app, event_count)
+
+    for event_row_number, event in enumerate(event_table):
+        if _update_export_progress(
+            progress,
+            event_row_number,
+            event_count,
+            current_event_number=event_row_number + 1,
+        ):
+            _write_json(os.path.join(events_dir, "index.json"), events_index)
+            progress.close()
+            app.printlog(
+                "Event package export canceled. "
+                f"Partial export remains at: {export_dir_path:s}"
+            )
+            return
+
+        internal_event_id = int(event["id"])
+        event_index = int(event["index"])
+        event_dir_name = _export_dir_name(event_row_number)
+        event_dir = os.path.join(events_dir, event_dir_name)
+        subevents_dir = os.path.join(event_dir, "subevents")
+        os.makedirs(subevents_dir, exist_ok=True)
+
+        local_start = int(event["local_startpt"])
+        local_end = int(event["local_endpt"])
+        global_start = int(event["global_startpt"])
+        global_end = int(event["global_endpt"])
+
+        event_meta = {
+            "event_index": event_index,
+            "seg": int(event["seg"]),
+            "local_startpt": local_start,
+            "local_endpt": local_end,
+            "global_startpt": global_start,
+            "global_endpt": global_end,
+            "t_start_s": _json_number(global_start / samplerate),
+            "t_end_s": _json_number(global_end / samplerate),
+            "dwell_us": _json_number(event["dwell"]),
+            "deli_A": _json_number(event["deli"]),
+            "frac": _json_number(event["frac"]),
+        }
+        _write_json(os.path.join(event_dir, "meta.json"), event_meta)
+
+        event_signal = _write_trace_csv(
+            app,
+            os.path.join(event_dir, "trace.csv"),
+            global_start=global_start,
+            global_end=global_end,
+            samplerate_hz=samplerate,
+            event_global_start=global_start,
+        )
+        _write_fft_csv(os.path.join(event_dir, "fft.csv"), event_signal, samplerate)
+
+        events_index.append(
+            {
+                "event_index": event_index,
+                "path": event_dir_name,
+            }
+        )
+
+        subevents_index = []
+        for state_row_number, state in enumerate(
+            _get_state_rows_for_event(state_table, internal_event_id)
+        ):
+            state_id = int(state["id"])
+            state_dir_name = _export_dir_name(state_row_number)
+            state_dir = os.path.join(subevents_dir, state_dir_name)
+            os.makedirs(state_dir, exist_ok=True)
+
+            state_global_start = int(state["global_startpt"])
+            state_global_end = int(state["global_endpt"])
+
+            state_meta = {
+                "state_id": state_id,
+                "state_index": int(state["index"]),
+                "seg": int(state["seg"]),
+                "local_startpt": int(state["local_startpt"]),
+                "local_endpt": int(state["local_endpt"]),
+                "global_startpt": state_global_start,
+                "global_endpt": state_global_end,
+                "t_start_s": _json_number(state_global_start / samplerate),
+                "t_end_s": _json_number(state_global_end / samplerate),
+                "dwell_us": _json_number(state["dwell"]),
+                "deli_A": _json_number(state["deli"]),
+                "frac": _json_number(state["frac"]),
+            }
+            _write_json(os.path.join(state_dir, "meta.json"), state_meta)
+
+            _write_trace_csv(
+                app,
+                os.path.join(state_dir, "trace.csv"),
+                global_start=state_global_start,
+                global_end=state_global_end,
+                samplerate_hz=samplerate,
+                event_global_start=global_start,
+                subevent_global_start=state_global_start,
+            )
+
+            subevents_index.append(
+                {
+                    "state_id": state_id,
+                    "state_index": int(state["index"]),
+                    "path": state_dir_name,
+                }
+            )
+
+        _write_json(os.path.join(subevents_dir, "index.json"), subevents_index)
+        if _update_export_progress(progress, event_row_number + 1, event_count):
+            _write_json(os.path.join(events_dir, "index.json"), events_index)
+            progress.close()
+            app.printlog(
+                "Event package export canceled. "
+                f"Partial export remains at: {export_dir_path:s}"
+            )
+            return
+
+    _write_json(os.path.join(events_dir, "index.json"), events_index)
+    if progress is not None:
+        progress.set_progress(event_count, event_count)
+        QtWidgets.QApplication.instance().processEvents()
+        progress.close()
+    app.printlog(
+        f"Exported {len(event_table):d} events to package: {export_dir_path:s}"
+    )
 
 
 class ExportTraceSelectionDialog(QtWidgets.QDialog):

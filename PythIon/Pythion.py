@@ -76,6 +76,15 @@ class ExtAppMainWindow(BaseAppMainWindow):
         self.actionExport_Event_Points_CSV.triggered.connect(
             lambda: IO.exportEventPointsCSV(self)
         )
+        self.actionExport_Event_Package = QtWidgets.QAction(
+            "Export Event Package...", self
+        )
+        self.ui.menuAnalysis.insertAction(
+            self.ui.actionExport_Events, self.actionExport_Event_Package
+        )
+        self.actionExport_Event_Package.triggered.connect(
+            lambda: IO.exportEventPackage(self)
+        )
 
         self.ui.gobutton.clicked.connect(lambda: Painting.inspectEvent(self))
         self.ui.previousbutton.clicked.connect(self.prevEvent)
