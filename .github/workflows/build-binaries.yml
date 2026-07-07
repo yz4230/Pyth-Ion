@@ -19,11 +19,6 @@ jobs:
             artifact_name: PythIon-windows-amd64
             artifact_path: build/_pyinstaller_dist/PythIon
             executable_path: build/_pyinstaller_dist/PythIon/PythIon.exe
-          - name: windows/arm64
-            os: windows-11-arm
-            artifact_name: PythIon-windows-arm64
-            artifact_path: build/_pyinstaller_dist/PythIon
-            executable_path: build/_pyinstaller_dist/PythIon/PythIon.exe
           - name: darwin/arm64
             os: macos-14
             artifact_name: PythIon-darwin-arm64
