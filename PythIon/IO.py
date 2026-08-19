@@ -43,7 +43,7 @@ class LoadFileDialog(QtWidgets.QDialog):
 
     def browseFile(self):
         file = QtWidgets.QFileDialog.getOpenFileName(
-            self, "Open file", "", "Data Files (*.opt *.bin *.tracedata)"
+            self, "Open file", "", "Data Files (*.opt *.bin *.txt *.tracedata)"
         )
         if file[0]:
             self.ui.plainTextEdit_DataFilePath.setPlainText(file[0])
@@ -59,6 +59,13 @@ class LoadFileDialog(QtWidgets.QDialog):
 
     def dialogReject(self):
         self.close()
+
+
+def _load_text_trace(path):
+    data = np.loadtxt(path, ndmin=1)
+    if data.ndim != 1 or data.size == 0 or not np.all(np.isfinite(data)):
+        raise ValueError("Text traces must contain one finite pA value per line")
+    return data * 1e-12
 
 
 def loadFile(app: BaseAppMainWindow, loadandplot=True):
@@ -111,39 +118,19 @@ def loadFile(app: BaseAppMainWindow, loadandplot=True):
             load_config.ADC_samplerate_kHz * 1e3
         )  # use integer multiples of 4166.67 ie 2083.33 or 1041.67
 
+        rawdata = None
         if datafileext == ".opt":
             rawdata = np.fromfile(app.perfiledata.datafilename, dtype=np.dtype(">d"))
             app.perfiledata.isFullTrace = True
             app.printlog("opt loaded")
-
-            if np.isfinite(app.perfiledata.LPFilter_cutoff_Hz):
-                Wn = round(
-                    app.perfiledata.LPFilter_cutoff_Hz
-                    / (app.perfiledata.ADC_samplerate_Hz / 2),
-                    4,
-                )
-                b, a = signal.bessel(4, Wn, btype="low")
-                filtdata = signal.filtfilt(b, a, rawdata)
-                app.printlog(
-                    f"Data filtered at {app.perfiledata.LPFilter_cutoff_Hz:.0f} Hz"
-                )
-
-            else:
-                filtdata = rawdata
-                app.printlog(
-                    "Filter value specified as no-filtering, data not filtered"
-                )
-            app.printlog(f"Read data size: {rawdata.shape!s} samples")
-
-            app.perfiledata.data.setOriginalData(rawdata, filtdata, datafilename_tail)
-
-            xml_file_path = datafilebase + ".xml"
-            tryLoadXml(xml_file_path)
-
         elif datafileext == ".bin":
             rawdata = np.fromfile(app.perfiledata.datafilename, dtype=np.dtype("<d"))
-            # app.perfiledata.matfilename = str(os.path.splitext(app.perfiledata.datafilename)[0])
             app.printlog("bin loaded")
+        elif datafileext == ".txt":
+            rawdata = _load_text_trace(app.perfiledata.datafilename)
+            app.printlog("txt loaded (pA)")
+
+        if rawdata is not None:
             if np.isfinite(app.perfiledata.LPFilter_cutoff_Hz):
                 Wn = round(
                     app.perfiledata.LPFilter_cutoff_Hz
@@ -162,6 +149,9 @@ def loadFile(app: BaseAppMainWindow, loadandplot=True):
                 )
             app.printlog(f"Read data size: {rawdata.shape!s}")
             app.perfiledata.data.setOriginalData(rawdata, filtdata, datafilename_tail)
+
+            if datafileext == ".opt":
+                tryLoadXml(datafilebase + ".xml")
 
         elif datafileext == ".tracedata":
             with open(app.perfiledata.datafilename, "rb") as dataf:
